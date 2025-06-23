@@ -6,13 +6,10 @@ import lombok.Data;
 @Data
 @Entity
 @Table
-public class patient {
+public class Clinic {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String username;
-    private String password;
     private String name;
-    private boolean gender;
-    private int age;
+    private String department;
 }
