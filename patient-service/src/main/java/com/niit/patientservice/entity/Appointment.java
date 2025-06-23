@@ -6,10 +6,13 @@ import lombok.Data;
 @Data
 @Entity
 @Table
-public class clinic {
+public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String name;
-    private String department;
+    private int patientId;
+    private int doctorId;
+    private int clinicId;
+    private String date;
+    private char schedule;
 }
