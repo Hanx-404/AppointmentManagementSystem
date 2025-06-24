@@ -2,8 +2,10 @@ package com.niit.patientservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table
 public class Doctor {
@@ -16,4 +18,12 @@ public class Doctor {
     @Lob
     private byte[] photo;
     private String desc;
+
+    public Doctor(String name, String role, int clinicId, byte[] photo, String desc) {
+        this.name = name;
+        this.role = role;
+        this.clinicId = clinicId;
+        this.photo = photo;
+        this.desc = desc;
+    }
 }

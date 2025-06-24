@@ -2,8 +2,10 @@ package com.niit.patientservice.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @Entity
 @Table
 public class Patient {
@@ -15,4 +17,12 @@ public class Patient {
     private String name;
     private boolean gender;
     private int age;
+
+    public Patient(String username, String password, String name, boolean gender, int age) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.gender = gender;
+        this.age = age;
+    }
 }
