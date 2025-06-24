@@ -201,10 +201,10 @@
                                 <tr th:each="clinic : ${clinics}">
                                     <td th:text="${clinic.id}">1</td>
                                     <td th:text="${clinic.name}">呼吸内科门诊</td>
-                                    <td th:text="${clinic.department.name}">内科</td>
+                                    <td th:text="${clinic.department}">内科</td>
                                     <td class="action-btns">
                                         <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editClinicModal"
-                                                th:attr="data-id=${clinic.id}, data-name=${clinic.name}, data-dept-id=${clinic.department.id}">
+                                                th:attr="data-id=${clinic.id}, data-name=${clinic.name}, data-department=${clinic.department}">
                                             <i class="bi bi-pencil"></i>
                                         </button>
                                         <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('clinic', [[${clinic.id}]])">
@@ -348,7 +348,7 @@
                     <div class="form-floating mb-3">
                         <select class="form-select" id="clinicDepartment" name="departmentId" required>
                             <option value="" selected disabled>选择所属科室</option>
-                            <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
+                            <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}"></option>
                         </select>
                         <label for="clinicDepartment">所属科室</label>
                     </div>
@@ -379,7 +379,7 @@
                     </div>
                     <div class="form-floating mb-3">
                         <select class="form-select" id="editClinicDepartment" name="departmentId" required>
-                            <option th:each="dept : ${departments}" th:value="${dept.id}" th:text="${dept.name}"></option>
+                            <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}"></option>
                         </select>
                         <label for="editClinicDepartment">所属科室</label>
                     </div>
@@ -590,6 +590,23 @@
         activeItem.classList.add('active');
     }
 
+    function initEditModals() {
+        // 编辑门诊模态框
+        const editClinicModal = document.getElementById('editClinicModal');
+        if (editClinicModal) {
+            editClinicModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const department = button.getAttribute('data-department');
+
+                const modal = this;
+                modal.querySelector('form').action = '/admin/clinics/' + id;
+                modal.querySelector('#editClinicName').value = name;
+                modal.querySelector('#editClinicDepartment').value = department;
+            });
+        }
+
     // 初始化所有编辑模态框
     function initEditModals() {
         // 编辑科室模态框
@@ -693,7 +710,7 @@
 
         const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
         modal.show();
-    }
+    }}
 </script>
 </body>
 </html>
