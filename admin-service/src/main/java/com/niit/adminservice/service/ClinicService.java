@@ -4,6 +4,8 @@ import com.niit.adminservice.dao.ClinicRepository;
 import com.niit.adminservice.entity.Clinic;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ClinicService {
 
@@ -11,6 +13,10 @@ public class ClinicService {
 
     public ClinicService(ClinicRepository clinicRepository) {
         this.clinicRepository = clinicRepository;
+    }
+
+    public List<Clinic> getAllClinics() {
+        return clinicRepository.findAll();
     }
 
     public void addClinic(Clinic clinic) {
