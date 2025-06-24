@@ -5,6 +5,7 @@ import com.niit.patientservice.service.LoginService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class LoginController {
@@ -16,7 +17,7 @@ public class LoginController {
     }
 
     @GetMapping("/login")
-    public String login(HttpSession session, String username, String password) {
+    public String login(HttpSession session, @RequestParam String username, @RequestParam String password) {
         Patient patient = loginService.login(username, password);
         if (patient != null) {
             session.setAttribute("patient", patient);
@@ -27,7 +28,12 @@ public class LoginController {
     }
 
     @GetMapping("/register")
-    public String register(Patient patient) {
+    public String register(@RequestParam String username,
+                           @RequestParam String password,
+                           @RequestParam String name,
+                           @RequestParam boolean gender,
+                           @RequestParam int age) {
+        Patient patient = new Patient(username, password, name, gender, age);
         if (loginService.register(patient) != null) {
             return "redirect:/login";
         } else {

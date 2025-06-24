@@ -21,6 +21,7 @@
     <modules>
         <module>nacos-config</module>
         <module>patient-service</module>
+        <module>admin-service</module>
     </modules>
 
     <properties>

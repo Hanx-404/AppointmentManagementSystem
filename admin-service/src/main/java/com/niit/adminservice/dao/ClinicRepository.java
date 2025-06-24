@@ -1,6 +1,6 @@
-package com.niit.patientservice.dao;
+package com.niit.adminservice.dao;
 
-import com.niit.patientservice.entity.Clinic;
+import com.niit.adminservice.entity.Clinic;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
