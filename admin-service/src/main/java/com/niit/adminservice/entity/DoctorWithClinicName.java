@@ -8,7 +8,8 @@ public class DoctorWithClinicName {
     private String name;
     private String role;
     private int clinicId;
-    private byte[] photo;
+//    private byte[] photoBlob;
+    private String photoBase64;
     private String desc;
     private String clinicName;
 
@@ -17,7 +18,7 @@ public class DoctorWithClinicName {
         this.name = doctor.getName();
         this.role = doctor.getRole();
         this.clinicId = doctor.getClinicId();
-        this.photo = doctor.getPhoto();
+        this.photoBase64 = doctor.getPhotoBase64();
         this.desc = doctor.getDesc();
         this.clinicName = clinicName;
     }

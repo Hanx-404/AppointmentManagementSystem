@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Base64;
 
 @Controller
 public class DoctorController {
@@ -27,8 +28,10 @@ public class DoctorController {
         if (photoFile.isEmpty()) {
             return "redirect:/error";
         }
+
         byte[] photoBlob = photoFile.getBytes();
-        Doctor doctor = new Doctor(name, role, clinicId, photoBlob, desc);
+        String photoBase64 = Base64.getEncoder().encodeToString(photoBlob);
+        Doctor doctor = new Doctor(name, role, clinicId, photoBlob, photoBase64,desc);
         doctorService.addDoctor(doctor);
         return "redirect:/admin/doctors";
     }
