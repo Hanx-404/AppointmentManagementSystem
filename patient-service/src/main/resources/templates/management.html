@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医院挂号系统 - 管理员界面</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --primary-color: #3a7bd5;
+            --secondary-color: #00d2ff;
+            --accent-color: #ff6b6b;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-brand i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 0;
+            list-style: none;
+        }
+
+        .sidebar-nav li a {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.8rem 1.5rem;
+            display: block;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav li a:hover,
+        .sidebar-nav li a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2d6bc5;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            border: none;
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .badge-success {
+            background-color: #28a745;
+        }
+
+        .badge-warning {
+            background-color: #ffc107;
+        }
+
+        .badge-danger {
+            background-color: #dc3545;
+        }
+
+        .modal-header {
+            border-bottom: none;
+        }
+
+        .form-floating label {
+            color: #6c757d;
+        }
+
+        .action-btns .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .tab-content {
+            padding: 1.5rem 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 侧边栏导航 -->
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <i class="bi bi-hospital"></i>
+        <span>医院挂号系统</span>
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="#" class="active"><i class="bi bi-speedometer2"></i> 控制面板</a></li>
+        <li><a href="#clinics" data-bs-toggle="tab"><i class="bi bi-building"></i> 门诊管理</a></li>
+        <li><a href="#doctors" data-bs-toggle="tab"><i class="bi bi-person-badge"></i> 医生管理</a></li>
+        <li><a href="#appointments" data-bs-toggle="tab"><i class="bi bi-calendar-check"></i> 挂号记录</a></li>
+        <li><a href="#"><i class="bi bi-gear"></i> 系统设置</a></li>
+        <li><a href="#"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
+    </ul>
+</div>
+
+<!-- 主内容区 -->
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="tab-content">
+            <!-- 门诊管理 -->
+            <div class="tab-pane fade show active" id="clinics">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">门诊管理</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addClinicModal">
+                            <i class="bi bi-plus"></i> 添加门诊
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>门诊名称</th>
+                                    <th>所属科室</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="clinic : ${clinics}">
+                                    <td th:text="${clinic.id}">1</td>
+                                    <td th:text="${clinic.name}">呼吸内科门诊</td>
+                                    <td th:text="${clinic.department}">内科</td>
+                                    <td class="action-btns">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editClinicModal"
+                                                th:attr="data-id=${clinic.id}, data-name=${clinic.name}, data-department=${clinic.department}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('clinic', [[${clinic.id}]])">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 医生管理 -->
+            <div class="tab-pane fade" id="doctors">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">医生管理</h5>
+                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addDoctorModal">
+                            <i class="bi bi-plus"></i> 添加医生
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>照片</th>
+                                    <th>姓名</th>
+                                    <!-- <th>性别</th> 已去掉 -->
+                                    <th>职称</th>
+                                    <th>门诊</th>
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="doctor : ${doctors}">
+                                    <td th:text="${doctor.id}">1</td>
+                                    <td>
+                                        <img th:if="${doctor.photo != null}" th:src="@{${doctor.photo}}" alt="医生照片"
+                                             style="width: 50px; height: 50px; object-fit: cover; border-radius: 50%;">
+                                        <span th:if="${doctor.photo == null}">无照片</span>
+                                    </td>
+                                    <td th:text="${doctor.name}">张医生</td>
+                                    <!-- <td th:text="${doctor.gender}">男</td> 去掉 -->
+                                    <td th:text="${doctor.title}">主任医师</td>
+                                    <td th:text="${doctor.clinic.name}">呼吸内科门诊</td>  <!-- 由科室改为门诊，假设实体doctor有clinic字段 -->
+                                    <td class="action-btns">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editDoctorModal"
+                                                th:attr="data-id=${doctor.id}, data-name=${doctor.name},
+                                                 data-title=${doctor.title}, data-clinic=${doctor.clinic.id},
+                                                 data-specialty=${doctor.specialty}, data-photo=${doctor.photo}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('doctor', [[${doctor.id}]])">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- 挂号记录 -->
+            <div class="tab-pane fade" id="appointments">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">挂号记录</h5>
+                        <div class="d-flex">
+                            <input type="date" class="form-control form-control-sm me-2" style="width: 150px;">
+                            <button class="btn btn-primary btn-sm">
+                                <i class="bi bi-search"></i> 搜索
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>患者姓名</th>
+                                    <th>医生</th>
+                                    <th>门诊</th> <!-- 改成门诊 -->
+                                    <th>预约时间</th>
+                                    <th>日程</th> <!-- 改成日程 -->
+                                    <th>操作</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="appt : ${appointments}">
+                                    <td th:text="${appt.id}">1</td>
+                                    <td th:text="${appt.patientName}">李四</td>
+                                    <td th:text="${appt.doctor.name}">张医生</td>
+                                    <td th:text="${appt.doctor.clinic.name}">呼吸内科门诊</td> <!-- 这里用门诊 -->
+                                    <td th:text="${#dates.format(appt.appointmentTime, 'yyyy-MM-dd HH:mm')}">2023-01-01 09:00</td>
+                                    <td>
+                                        <span th:if="${appt.status} == '上午'" class="badge bg-primary">上午</span>
+                                        <span th:if="${appt.status} == '下午'" class="badge bg-info text-dark">下午</span>
+                                    </td>
+                                    <td class="action-btns">
+                                        <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editAppointmentModal"
+                                                th:attr="data-id=${appt.id}, data-patient=${appt.patientName}, data-doctor=${appt.doctor.id},
+                                             data-time=${#dates.format(appt.appointmentTime, 'yyyy-MM-dd\'T\'HH:mm')}, data-status=${appt.status}">
+                                            <i class="bi bi-pencil"></i>
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete('appointment', [[${appt.id}]])">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <!-- 添加门诊模态框 -->
+<div class="modal fade" id="addClinicModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加门诊</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/admin/clinics}" method="post">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="clinicName" name="name" placeholder="门诊名称" required>
+                        <label for="clinicName">门诊名称</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="clinicDepartment" name="departmentId" required>
+                            <option value="" selected disabled>选择所属科室</option>
+                            <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}"></option>
+                        </select>
+                        <label for="clinicDepartment">所属科室</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑门诊模态框 -->
+<div class="modal fade" id="editClinicModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">编辑门诊</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/admin/clinics/{id}(id=${clinic.id})}" th:object="${clinic}" method="post">
+                <input type="hidden" name="_method" value="put">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editClinicName" name="name" placeholder="门诊名称" required>
+                        <label for="editClinicName">门诊名称</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="editClinicDepartment" name="departmentId" required>
+                            <option th:each="dept : ${departments}" th:value="${dept}" th:text="${dept}"></option>
+                        </select>
+                        <label for="editClinicDepartment">所属科室</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 添加医生模态框 -->
+<div class="modal fade" id="addDoctorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加医生</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/admin/doctors}" method="post" enctype="multipart/form-data">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="doctorName" name="name" placeholder="医生姓名" required>
+                        <label for="doctorName">医生姓名</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="doctorClinic" name="clinicId" required>
+                            <option value="" selected disabled>选择所属门诊</option>
+                            <option th:each="clinic : ${clinics}" th:value="${clinic.id}" th:text="${clinic.name}"></option>
+                        </select>
+                        <label for="doctorClinic">所属门诊</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="doctorTitle" name="title" placeholder="职称" required>
+                        <label for="doctorTitle">职称</label>
+                    </div>
+                    <div class="mb-3">
+                        <label for="doctorPhoto" class="form-label">医生照片</label>
+                        <input class="form-control" type="file" id="doctorPhoto" name="photo" accept="image/*">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑医生模态框 -->
+<div class="modal fade" id="editDoctorModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">编辑医生信息</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/admin/doctors/{id}(id=${doctor.id})}" method="post" enctype="multipart/form-data">
+                <input type="hidden" name="_method" value="put">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editDoctorName" name="name" placeholder="医生姓名" required>
+                        <label for="editDoctorName">医生姓名</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="editDoctorClinic" name="clinicId" required>
+                            <option value="" disabled>选择所属门诊</option>
+                            <option th:each="clinic : ${clinics}" th:value="${clinic.id}" th:text="${clinic.name}"></option>
+                        </select>
+                        <label for="editDoctorClinic">所属门诊</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editDoctorTitle" name="title" placeholder="职称" required>
+                        <label for="editDoctorTitle">职称</label>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="editDoctorPhoto" class="form-label">医生照片</label>
+                        <input class="form-control" type="file" id="editDoctorPhoto" name="photo" accept="image/*">
+                        <!-- 这里可以用一个img标签预览现有照片，如果需要，JS可帮你填充 -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+            <!-- 编辑挂号记录模态框 -->
+            <div class="modal fade" id="editAppointmentModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">编辑挂号记录</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <form th:action="@{/admin/appointments/{id}(id=${appt.id})}" th:object="${appt}" method="post">
+                            <input type="hidden" name="_method" value="put">
+                            <div class="modal-body">
+                                <div class="form-floating mb-3">
+                                    <input type="text" class="form-control" id="editPatientName" name="patientName" placeholder="患者姓名" required>
+                                    <label for="editPatientName">患者姓名</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="editApptDoctor" name="doctorId" required>
+                                        <option th:each="doctor : ${doctors}"
+                                                th:value="${doctor.id}"
+                                                th:text="${doctor.name + ' (' + doctor.clinic.name + ')'}">
+                                        </option>
+                                    </select>
+                                    <label for="editApptDoctor">医生（所属门诊）</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <input type="datetime-local" class="form-control" id="editApptTime" name="appointmentTime" required>
+                                    <label for="editApptTime">预约时间</label>
+                                </div>
+                                <div class="form-floating mb-3">
+                                    <select class="form-select" id="editApptStatus" name="status" required>
+                                        <option value="上午">上午</option>
+                                        <option value="下午">下午</option>
+                                    </select>
+                                    <label for="editApptStatus">日程</label>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="submit" class="btn btn-primary">保存</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认删除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>您确定要删除这条记录吗？此操作不可撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <form id="deleteForm" method="post">
+                    <input type="hidden" name="_method" value="delete">
+                    <button type="submit" class="btn btn-danger">确认删除</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 简单直接的Tab切换实现
+        document.querySelectorAll('.sidebar-nav a[data-bs-toggle="tab"]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+
+                // 更新导航active状态
+                document.querySelectorAll('.sidebar-nav a').forEach(item => {
+                    item.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                // 获取目标tab ID
+                const targetId = this.getAttribute('href');
+
+                // 隐藏所有tab内容
+                document.querySelectorAll('.tab-pane').forEach(tab => {
+                    tab.classList.remove('show', 'active');
+                });
+
+                // 显示目标tab内容
+                const targetTab = document.querySelector(targetId);
+                if (targetTab) {
+                    targetTab.classList.add('show', 'active');
+                }
+
+                // 更新URL hash
+                window.location.hash = targetId;
+            });
+        });
+
+        // 初始加载时根据hash显示对应tab
+        if (window.location.hash) {
+            const initialTab = document.querySelector(`.sidebar-nav a[href="${window.location.hash}"]`);
+            if (initialTab) {
+                initialTab.click();
+            }
+        }
+    });
+
+    // 更新活动导航项样式
+    function updateActiveNavItem(activeItem) {
+        document.querySelectorAll('.sidebar-nav a').forEach(item => {
+            item.classList.remove('active');
+        });
+        activeItem.classList.add('active');
+    }
+
+    function initEditModals() {
+        // 编辑门诊模态框
+        const editClinicModal = document.getElementById('editClinicModal');
+        if (editClinicModal) {
+            editClinicModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const department = button.getAttribute('data-department');
+
+                const modal = this;
+                modal.querySelector('form').action = '/admin/clinics/' + id;
+                modal.querySelector('#editClinicName').value = name;
+                modal.querySelector('#editClinicDepartment').value = department;
+            });
+        }
+
+    // 初始化所有编辑模态框
+    function initEditModals() {
+        // 编辑科室模态框
+        const editDeptModal = document.getElementById('editDepartmentModal');
+        if (editDeptModal) {
+            editDeptModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const desc = button.getAttribute('data-desc');
+
+                const modal = this;
+                modal.querySelector('form').action = '/admin/departments/' + id;
+                modal.querySelector('#editDeptName').value = name;
+                modal.querySelector('#editDeptDesc').value = desc;
+            });
+        }
+
+        // 编辑医生模态框
+        const editDoctorModal = document.getElementById('editDoctorModal');
+        if (editDoctorModal) {
+            editDoctorModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const name = button.getAttribute('data-name');
+                const gender = button.getAttribute('data-gender');
+                const title = button.getAttribute('data-title');
+                const dept = button.getAttribute('data-dept');
+                const specialty = button.getAttribute('data-specialty');
+
+                const modal = this;
+                modal.querySelector('form').action = '/admin/doctors/' + id;
+                modal.querySelector('#editDoctorName').value = name;
+                modal.querySelector('#editDoctorGender').value = gender;
+                modal.querySelector('#editDoctorTitle').value = title;
+                modal.querySelector('#editDoctorDept').value = dept;
+                modal.querySelector('#editDoctorSpecialty').value = specialty;
+            });
+        }
+
+        // 编辑挂号记录模态框
+        const editApptModal = document.getElementById('editAppointmentModal');
+        if (editApptModal) {
+            editApptModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const patient = button.getAttribute('data-patient');
+                const doctor = button.getAttribute('data-doctor');
+                const time = button.getAttribute('data-time');
+                const status = button.getAttribute('data-status');
+
+                const modal = this;
+                modal.querySelector('form').action = '/admin/appointments/' + id;
+                modal.querySelector('#editPatientName').value = patient;
+                modal.querySelector('#editApptDoctor').value = doctor;
+                modal.querySelector('#editApptTime').value = time;
+                modal.querySelector('#editApptStatus').value = status;
+            });
+        }
+    }
+
+    // 确认删除函数
+    function confirmDelete(type, id) {
+        const deleteForm = document.getElementById('deleteForm');
+        let deleteUrl = '';
+
+        switch(type) {
+            case 'department':
+                deleteUrl = '/admin/departments/' + id;
+                break;
+            case 'doctor':
+                deleteUrl = '/admin/doctors/' + id;
+                break;
+            case 'appointment':
+                deleteUrl = '/admin/appointments/' + id;
+                break;
+            case 'clinic':
+                deleteUrl = '/admin/clinics/' + id;
+                break;
+        }
+
+        deleteForm.action = deleteUrl;
+
+        // 设置删除表单的提交事件
+        deleteForm.onsubmit = function(e) {
+            e.preventDefault();
+            // 这里可以添加AJAX删除请求
+            fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        location.reload(); // 删除成功后刷新页面
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        };
+
+        const modal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+        modal.show();
+    }}
+</script>
+</body>
+</html>
