@@ -21,8 +21,10 @@ public class IndexController {
         this.clinicRepository = clinicRepository;
     }
 
+    // 访问管理页面
     @GetMapping("/index")
     public String index(Model model) {
+        // TODO
         model.addAttribute("clinics", clinicService.getAllClinics());
         model.addAttribute("doctors", doctorService.getAllDoctorsWithClinicName());
         model.addAttribute("departments", clinicRepository.findAllDepartments());

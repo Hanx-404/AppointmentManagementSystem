@@ -19,7 +19,7 @@ public class ClinicService {
         return clinicRepository.findAll();
     }
 
-    public void addClinic(Clinic clinic) {
+    public void saveClinic(Clinic clinic) {
         clinicRepository.saveAndFlush(clinic);
     }
 }

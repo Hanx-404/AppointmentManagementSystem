@@ -31,7 +31,7 @@ public class DoctorService {
         return doctorsWithClinicName;
     }
 
-    public void addDoctor(Doctor doctor) {
-        doctorRepository.save(doctor);
+    public void saveDoctor(Doctor doctor) {
+        doctorRepository.saveAndFlush(doctor);
     }
 }
