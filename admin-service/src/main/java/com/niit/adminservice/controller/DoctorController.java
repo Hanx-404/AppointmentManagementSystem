@@ -32,7 +32,7 @@ public class DoctorController {
         byte[] photoBlob = photoFile.getBytes();
         String photoBase64 = Base64.getEncoder().encodeToString(photoBlob);
         Doctor doctor = new Doctor(name, role, clinicId, photoBlob, photoBase64,desc);
-        doctorService.addDoctor(doctor);
+        doctorService.saveDoctor(doctor);
         return "redirect:/admin/doctors";
     }
 }
