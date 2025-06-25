@@ -4,6 +4,7 @@ import com.niit.adminservice.dao.ClinicRepository;
 import com.niit.adminservice.dao.DoctorRepository;
 import com.niit.adminservice.entity.Doctor;
 import com.niit.adminservice.entity.DoctorWithClinicName;
+import com.niit.adminservice.entity.Result;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -53,5 +54,14 @@ public class DoctorService {
 
         saveDoctor(editedDoctor);
         return true;
+    }
+
+    public Result<Boolean> deleteDoctorById(Integer id){
+        if(doctorRepository.existsById(id)){
+            doctorRepository.deleteById(id);
+            return Result.success(true,"医生删除成功");
+        }else {
+            return Result.fail("医生不存在，id：" +id);
+        }
     }
 }

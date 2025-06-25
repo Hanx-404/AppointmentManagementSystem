@@ -1,17 +1,18 @@
 package com.niit.adminservice.controller;
 
 import com.niit.adminservice.entity.Doctor;
+import com.niit.adminservice.entity.Result;
 import com.niit.adminservice.service.DoctorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Base64;
 
 @Controller
+@RequestMapping("/admin/doctor")
 public class DoctorController {
 
     private final DoctorService doctorService;
@@ -62,5 +63,11 @@ public class DoctorController {
             model.addAttribute("errorMsg", "编辑医生错误！");
             return "redirect:/error";
         }
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseBody
+    public Result<Boolean> deleteDoctorById(@PathVariable("id") Integer id){
+        return doctorService.deleteDoctorById(id);
     }
 }
