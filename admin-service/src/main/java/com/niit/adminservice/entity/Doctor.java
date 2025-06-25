@@ -5,6 +5,7 @@ import lombok.*;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table
 public class Doctor {
@@ -18,7 +19,7 @@ public class Doctor {
     private byte[] photoBlob;
     @Lob
     private String photoBase64;
-    @Column(name = "desc")
+    @Column(name = "`desc`")
     private String desc;
 
     public Doctor(String name, String role, int clinicId, byte[] photoBlob, String photoBase64, String desc) {

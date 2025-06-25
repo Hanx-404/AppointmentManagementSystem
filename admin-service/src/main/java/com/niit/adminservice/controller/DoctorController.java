@@ -3,6 +3,7 @@ package com.niit.adminservice.controller;
 import com.niit.adminservice.entity.Doctor;
 import com.niit.adminservice.service.DoctorService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,19 +21,46 @@ public class DoctorController {
     }
 
     @PostMapping("/addDoctor")
-    public String addDoctor(@RequestParam String name,
+    public String addDoctor(Model model,
+                            @RequestParam String name,
                             @RequestParam String role,
                             @RequestParam int clinicId,
                             @RequestParam MultipartFile photoFile,
                             @RequestParam String desc) throws IOException {
         if (photoFile.isEmpty()) {
+            model.addAttribute("errorMsg", "请选择图片！");
             return "redirect:/error";
         }
 
         byte[] photoBlob = photoFile.getBytes();
         String photoBase64 = Base64.getEncoder().encodeToString(photoBlob);
-        Doctor doctor = new Doctor(name, role, clinicId, photoBlob, photoBase64,desc);
+        Doctor doctor = new Doctor(name, role, clinicId, photoBlob, photoBase64, desc);
         doctorService.saveDoctor(doctor);
-        return "redirect:/admin/doctors";
+        return "redirect:/index#doctors";
+    }
+
+    @PostMapping("/editDoctor")
+    public String editDoctor(Model model,
+                             @RequestParam int id,
+                             @RequestParam String name,
+                             @RequestParam String role,
+                             @RequestParam int clinicId,
+                             @RequestParam MultipartFile photoFile,
+                             @RequestParam String desc) throws IOException {
+        byte[] photoBlob = null;
+        String photoBase64 = null;
+
+        if (!photoFile.isEmpty()) {
+            photoBlob = photoFile.getBytes();
+            photoBase64 = Base64.getEncoder().encodeToString(photoBlob);
+        }
+
+        Doctor doctor = new Doctor(id, name, role, clinicId, photoBlob, photoBase64, desc);
+        if (doctorService.editDoctor(doctor)) {
+            return "redirect:/index#doctors";
+        } else {
+            model.addAttribute("errorMsg", "编辑医生错误！");
+            return "redirect:/error";
+        }
     }
 }

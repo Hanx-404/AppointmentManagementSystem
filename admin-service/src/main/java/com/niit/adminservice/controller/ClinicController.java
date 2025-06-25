@@ -22,13 +22,13 @@ public class ClinicController {
                             @RequestParam String department) {
         Clinic clinic = new Clinic(name, department);
         clinicService.saveClinic(clinic);
-        return "redirect:/admin";   // TODO
+        return "redirect:/management#clinics";
     }
 
     // 修改门诊
     @PostMapping("/editClinic")
     public String editClinic(@ModelAttribute Clinic clinic) {
         clinicService.saveClinic(clinic);
-        return "redirect:/admin";   // TODO
+        return "redirect:/management#clinics";
     }
 }

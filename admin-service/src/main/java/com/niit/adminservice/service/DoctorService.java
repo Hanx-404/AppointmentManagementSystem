@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class DoctorService {
@@ -33,5 +34,24 @@ public class DoctorService {
 
     public void saveDoctor(Doctor doctor) {
         doctorRepository.saveAndFlush(doctor);
+    }
+
+    public boolean editDoctor(Doctor doctor) {
+        if (doctorRepository.findById(doctor.getId()).isEmpty()) {
+            return false;
+        }
+        Doctor editedDoctor = doctorRepository.findById(doctor.getId()).get();
+
+        editedDoctor.setName(doctor.getName());
+        editedDoctor.setRole(doctor.getRole());
+        editedDoctor.setClinicId(doctor.getClinicId());
+        editedDoctor.setDesc(doctor.getDesc());
+        if (doctor.getPhotoBlob() != null && doctor.getPhotoBase64() != null) {
+            editedDoctor.setPhotoBlob(doctor.getPhotoBlob());
+            editedDoctor.setPhotoBase64(doctor.getPhotoBase64());
+        }
+
+        saveDoctor(editedDoctor);
+        return true;
     }
 }

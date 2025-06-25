@@ -383,7 +383,7 @@
                             <h5 class="modal-title">编辑医生信息</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
-                        <form id="editDoctorForm" th:action="@{/admin/doctors}" method="post" enctype="multipart/form-data">
+                        <form id="editDoctorForm" th:action="@{/editDoctor}" method="post" enctype="multipart/form-data">
                             <input type="hidden" id="editDoctorId" name="id">
                             <input type="hidden" name="_method" value="put">
                             <div class="modal-body">
