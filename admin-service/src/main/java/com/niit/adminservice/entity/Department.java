@@ -10,15 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 @Table
-public class Clinic {
+public class Department {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private int departmentId;
 
-    public Clinic(String name, int departmentId) {
+    public Department(String name) {
         this.name = name;
-        this.departmentId = departmentId;
     }
 }

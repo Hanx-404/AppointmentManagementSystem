@@ -19,8 +19,8 @@ public class ClinicController {
     // 新增门诊
     @PostMapping("/addClinic")
     public String addClinic(@RequestParam String name,
-                            @RequestParam String department) {
-        Clinic clinic = new Clinic(name, department);
+                            @RequestParam int departmentId) {
+        Clinic clinic = new Clinic(name, departmentId);
         clinicService.saveClinic(clinic);
         return "redirect:/management#clinics";
     }

@@ -17,8 +17,8 @@ public class ClinicService {
         this.clinicRepository = clinicRepository;
     }
 
-    public Map<String, List<Clinic>> getAllClinicsSorted() {
+    public Map<Integer, List<Clinic>> getAllClinicsSorted() {
         List<Clinic> clinics = clinicRepository.findAll();
-        return clinics.stream().collect(Collectors.groupingBy(Clinic::getDepartment));
+        return clinics.stream().collect(Collectors.groupingBy(Clinic::getDepartmentId));
     }
 }

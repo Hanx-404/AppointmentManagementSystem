@@ -1,11 +1,13 @@
 package com.niit.patientservice.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table
 public class Doctor {
@@ -16,14 +18,17 @@ public class Doctor {
     private String role;
     private int clinicId;
     @Lob
-    private byte[] photo;
+    private byte[] photoBlob;
+    @Lob
+    private String photoBase64;
     private String desc;
 
-    public Doctor(String name, String role, int clinicId, byte[] photo, String desc) {
+    public Doctor(String name, String role, int clinicId, byte[] photoBlob, String photoBase64, String desc) {
         this.name = name;
         this.role = role;
         this.clinicId = clinicId;
-        this.photo = photo;
+        this.photoBlob = photoBlob;
+        this.photoBase64 = photoBase64;
         this.desc = desc;
     }
 }
