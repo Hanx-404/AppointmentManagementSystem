@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>智能挂号-预约</title>
+    <link rel="stylesheet" href="/bootstrap-4.6.2-dist/css/bootstrap.min.css">
+    <script src="/jquery-3.7.1.min.js"></script>
+    <script src="/bootstrap-4.6.2-dist/js/bootstrap.min.js"></script>
+    <style>
+        .doctor-photo {
+            max-width: 120px;
+            max-height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5" id="doctors">
+    <h2 class="mb-4 text-center">选择医生</h2>
+    <!-- 日程选择 -->
+    <div class="text-center mb-4 btn-time-slot" id="time-slot-group">
+        <input type="radio" id="slot1" name="timeSlot" value="2025-07-04-AM">
+        <label for="slot1">07-04 星期五 上午</label>
+
+        <input type="radio" id="slot2" name="timeSlot" value="2025-07-04-PM">
+        <label for="slot2">07-04 星期五 下午</label>
+
+        <input type="radio" id="slot3" name="timeSlot" value="2025-07-05-AM">
+        <label for="slot3">07-05 星期六 上午</label>
+
+        <input type="radio" id="slot4" name="timeSlot" value="2025-07-05-PM">
+        <label for="slot4">07-05 星期六 下午</label>
+    </div>
+
+    <!-- 医生列表 -->
+    <div class="col-md-12 mb-4">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th>照片</th>
+                <th>姓名</th>
+                <th>职称</th>
+                <th>简介</th>
+                <th>预约</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="doctor: ${doctors}">
+                <td>
+                    <img th:src="'data:image/jpeg;base64,'+${doctor.photoBase64}" class="doctor-photo" alt="医生照片"/>
+                </td>
+                <td th:text="${doctor.name}">医生姓名</td>
+                <td th:text="${doctor.role}">医生职称</td>
+                <td th:text="${doctor.desc}">医生简介</td>
+                <td>
+                    <a class="btn btn-sm btn-outline-primary btn-register" th:attr="data-doctor-id=${doctor.id}">
+                        挂号
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('.btn-register').on('click', function () {
+            const doctorId = $(this).data('doctor-id');
+            const timeSlot = $('input[name="timeSlot"]:checked').val();
+            const [date, time] = timeSlot.split(/-(?=[AP]M)/);
+
+            if (!timeSlot) {
+                alert("请先选择预约的日期和时间段！");
+                return;
+            }
+
+            // 发送 AJAX 请求
+            $.ajax({
+                url: '/registerAppointment',  // 请根据实际接口路径调整
+                method: 'POST',
+                data: {
+                    doctorId: doctorId,
+                    date: date,
+                    time: time
+                },
+                success: function (response) {
+                    alert("挂号成功！");
+                },
+                error: function () {
+                    alert("挂号失败，请稍后重试。");
+                }
+            });
+        });
+    });
+</script>
+
+</body>
+</html>
