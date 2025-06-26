@@ -21,8 +21,8 @@ public class Clinic {
     @JoinColumn(name = "department_id", referencedColumnName = "id")
     private Department department;
 
-    @OneToMany(mappedBy = "clinic")
-    private List<Doctor> doctors;
+//    @OneToMany(mappedBy = "clinic")
+//    private List<Doctor> doctors;
 
     public Clinic(String name, Department department) {
         this.name = name;

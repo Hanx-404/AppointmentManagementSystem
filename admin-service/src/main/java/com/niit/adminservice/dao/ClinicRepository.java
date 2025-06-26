@@ -1,6 +1,7 @@
 package com.niit.adminservice.dao;
 
 import com.niit.adminservice.entity.Clinic;
+import org.hibernate.annotations.SQLInsert;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -10,6 +11,11 @@ import java.util.List;
 @Repository
 public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
 
-    @Query("SELECT DISTINCT c.department FROM Clinic c WHERE c.department IS NOT NULL")
-    List<String> findAllDepartments();
+    Clinic findByName(String clinicName);
+
+//    @SQLInsert("insert into clinic where clinicName = #{clinicName} and departmentId = #{departmentId}")
+//    Clinic insertClinicAndDepartment(String clinicName,Integer departmentId);
+
+//    @Query("SELECT * FROM Clinic")
+//    List<String> findAllDepartments();
 }

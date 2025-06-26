@@ -25,7 +25,7 @@ public class DoctorController {
         this.clinicService = clinicService;
     }
 
-    @PostMapping("/addDoctor")
+    @PostMapping("/add")
     public String addDoctor(Model model,
                             @RequestParam String name,
                             @RequestParam String role,
@@ -50,7 +50,7 @@ public class DoctorController {
         return "redirect:/index#doctors";
     }
 
-    @PostMapping("/editDoctor")
+    @PostMapping("/edit")
     public String editDoctor(Model model,
                              @RequestParam int id,
                              @RequestParam String name,

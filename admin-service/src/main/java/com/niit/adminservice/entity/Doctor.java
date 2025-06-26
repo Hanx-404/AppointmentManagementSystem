@@ -23,6 +23,7 @@ public class Doctor {
     private byte[] photoBlob;
     @Lob
     private String photoBase64;
+    @Column(name = "`desc`")
     private String desc;
 
     public Doctor(String name, String role, Clinic clinic, byte[] photoBlob, String photoBase64, String desc) {

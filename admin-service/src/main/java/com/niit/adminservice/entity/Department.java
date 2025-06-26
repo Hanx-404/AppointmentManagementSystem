@@ -18,8 +18,8 @@ public class Department {
     private int id;
     private String name;
 
-    @OneToMany(mappedBy = "department")
-    private List<Clinic> clinics;
+//    @OneToMany(mappedBy = "department")
+//    private List<Clinic> clinics;
 
     public Department(String name) {
         this.name = name;

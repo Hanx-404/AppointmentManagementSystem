@@ -3,7 +3,6 @@ package com.niit.adminservice.service;
 import com.niit.adminservice.dao.ClinicRepository;
 import com.niit.adminservice.dao.DoctorRepository;
 import com.niit.adminservice.entity.Doctor;
-import com.niit.adminservice.entity.DoctorWithClinicName;
 import com.niit.adminservice.entity.Result;
 import org.springframework.stereotype.Service;
 
