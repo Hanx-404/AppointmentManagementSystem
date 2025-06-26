@@ -36,12 +36,12 @@ public class Appointment {
         WAITING, ACTIVE, COMPLETED
     }
 
-    public Appointment(Patient patient, Doctor doctor, Clinic clinic, LocalDate date, char time, AppointmentState state) {
+    public Appointment(Patient patient, Doctor doctor, Clinic clinic, LocalDate date, char time) {
         this.patient = patient;
         this.doctor = doctor;
         this.clinic = clinic;
         this.date = date;
         this.time = time;
-        this.state = state;
+        this.state = AppointmentState.WAITING;
     }
 }
