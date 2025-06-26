@@ -313,12 +313,11 @@
                 </div>
                 <div class="card-body p-0">
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item" data-dept="内科" onclick="filterClinics(this)">内科</li>
-                        <li class="list-group-item" data-dept="外科" onclick="filterClinics(this)">外科</li>
-                        <li class="list-group-item" data-dept="儿科" onclick="filterClinics(this)">儿科</li>
-                        <li class="list-group-item" data-dept="妇产科" onclick="filterClinics(this)">妇产科</li>
-                        <li class="list-group-item" data-dept="口腔科" onclick="filterClinics(this)">口腔科</li>
-                        <li class="list-group-item" data-dept="骨科" onclick="filterClinics(this)">骨科</li>
+                        <li class="list-group-item"
+                            th:each="department : ${departments}"
+                            th:data-dept="${department.name}"
+                            th:onclick="'filterClinics(this)'"
+                            th:text="${department.name}">科室名称</li>
                     </ul>
                 </div>
             </div>
@@ -339,19 +338,20 @@
                         </div>
 
                         <!-- 所有门诊（初始隐藏） -->
-                        <div class="col-md-6" th:each="clinic : ${clinics}"
-                             th:data-dept="${clinic.department}" style="display: none">
-                            <div class="card h-100">
-                                <div class="card-body">
-                                    <h6 th:text="${clinic.name}">呼吸内科门诊</h6>
-                                    <p class="text-muted mb-2">
-                                        <i class="bi bi-hospital"></i>
-                                        <span th:text="${clinic.department}">内科</span>
-                                    </p>
-                                    <a class="btn btn-sm btn-outline-primary"
-                                       th:href="@{/clinic/{id}/doctors(id=${clinic.id})}">
-                                        查看医生
-                                    </a>
+                        <div th:each="entry : ${clinics}">
+                            <div class="col-md-6" th:each="clinic : ${entry.value}" th:data-dept="${entry.key.name}" style="display: none">
+                                <div class="card h-100">
+                                    <div class="card-body">
+                                        <h6 th:text="${clinic.name}">呼吸内科门诊</h6>
+                                        <p class="text-muted mb-2">
+                                            <i class="bi bi-hospital"></i>
+                                            <span th:text="${clinic.department.name}">内科</span>
+                                        </p>
+                                        <a class="btn btn-sm btn-outline-primary"
+                                           th:href="@{/clinic/{id}/doctors(id=${clinic.id})}">
+                                            查看医生
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -434,10 +434,10 @@
                         <label for="apptSchedule">日程安排</label>
                     </div>
 
-                    <!-- 隐藏字段：patientId / doctorId / clinicId -->
-                    <input type="hidden" id="apptPatientId" name="patientId" th:value="${currentUser.id}">
-                    <input type="hidden" id="apptDoctorId" name="doctorId">
-                    <input type="hidden" id="apptClinicId" name="clinicId">
+                    <!-- &lt;!&ndash; 隐藏字段：patientId / doctorId / clinicId &ndash;&gt; -->
+                    <!-- <input type="hidden" id="apptPatientId" name="patientId" th:value="${currentUser.id}"> -->
+                    <!-- <input type="hidden" id="apptDoctorId" name="doctorId"> -->
+                    <!-- <input type="hidden" id="apptClinicId" name="clinicId"> -->
                 </div>
 
                 <!-- 底部按钮 -->

@@ -12,6 +12,4 @@ public interface ClinicRepository extends JpaRepository<Clinic, Integer> {
 
     @Query("SELECT DISTINCT c.department FROM Clinic c WHERE c.department IS NOT NULL")
     List<String> findAllDepartments();
-
-    Clinic findById(int id);
 }

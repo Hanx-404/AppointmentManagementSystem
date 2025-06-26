@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @Entity
@@ -17,6 +19,9 @@ public class Patient {
     private String name;
     private boolean gender;
     private int age;
+
+    @OneToMany(mappedBy = "patient")
+    private List<Appointment> appointments;
 
     public Patient(String username, String password, String name, boolean gender, int age) {
         this.username = username;

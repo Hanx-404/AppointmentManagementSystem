@@ -26,7 +26,7 @@ public class IndexController {
     public String index(Model model) {
         // TODO
         model.addAttribute("clinics", clinicService.getAllClinics());
-        model.addAttribute("doctors", doctorService.getAllDoctorsWithClinicName());
+        model.addAttribute("doctors", doctorService.getAllDoctors());
         model.addAttribute("departments", clinicRepository.findAllDepartments());
         model.addAttribute("clinic", new Clinic());
         return "management";

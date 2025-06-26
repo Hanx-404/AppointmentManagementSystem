@@ -17,9 +17,15 @@ public class Appointment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int patientId;
-    private int doctorId;
-    private int clinicId;
+    @ManyToOne
+    @JoinColumn(name = "patient_id", referencedColumnName = "id")
+    private Patient patient;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id", referencedColumnName = "id")
+    private Doctor doctor;
+    @ManyToOne
+    @JoinColumn(name = "clinic_id", referencedColumnName = "id")
+    private Clinic clinic;
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
     private char time;
@@ -30,10 +36,10 @@ public class Appointment {
         WAITING, ACTIVE, COMPLETED
     }
 
-    public Appointment(int patientId, int doctorId, int clinicId, LocalDate date, char time, AppointmentState state) {
-        this.patientId = patientId;
-        this.doctorId = doctorId;
-        this.clinicId = clinicId;
+    public Appointment(Patient patient, Doctor doctor, Clinic clinic, LocalDate date, char time, AppointmentState state) {
+        this.patient = patient;
+        this.doctor = doctor;
+        this.clinic = clinic;
         this.date = date;
         this.time = time;
         this.state = state;

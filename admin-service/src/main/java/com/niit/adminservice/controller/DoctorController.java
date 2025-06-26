@@ -1,7 +1,9 @@
 package com.niit.adminservice.controller;
 
+import com.niit.adminservice.entity.Clinic;
 import com.niit.adminservice.entity.Doctor;
 import com.niit.adminservice.entity.Result;
+import com.niit.adminservice.service.ClinicService;
 import com.niit.adminservice.service.DoctorService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,9 +18,11 @@ import java.util.Base64;
 public class DoctorController {
 
     private final DoctorService doctorService;
+    private final ClinicService clinicService;
 
-    public DoctorController(DoctorService doctorService) {
+    public DoctorController(DoctorService doctorService, ClinicService clinicService) {
         this.doctorService = doctorService;
+        this.clinicService = clinicService;
     }
 
     @PostMapping("/addDoctor")
@@ -33,9 +37,15 @@ public class DoctorController {
             return "redirect:/error";
         }
 
+        Clinic clinic = clinicService.getClinicById(clinicId);
+        if (clinic == null) {
+            model.addAttribute("errorMsg", "找不到诊所！");
+            return "redirect:/error";
+        }
+
         byte[] photoBlob = photoFile.getBytes();
         String photoBase64 = Base64.getEncoder().encodeToString(photoBlob);
-        Doctor doctor = new Doctor(name, role, clinicId, photoBlob, photoBase64, desc);
+        Doctor doctor = new Doctor(name, role, clinic, photoBlob, photoBase64, desc);
         doctorService.saveDoctor(doctor);
         return "redirect:/index#doctors";
     }
@@ -56,7 +66,9 @@ public class DoctorController {
             photoBase64 = Base64.getEncoder().encodeToString(photoBlob);
         }
 
-        Doctor doctor = new Doctor(id, name, role, clinicId, photoBlob, photoBase64, desc);
+        Clinic clinic = clinicService.getClinicById(clinicId);
+
+        Doctor doctor = new Doctor(id, name, role, clinic, photoBlob, photoBase64, desc);
         if (doctorService.editDoctor(doctor)) {
             return "redirect:/index#doctors";
         } else {
