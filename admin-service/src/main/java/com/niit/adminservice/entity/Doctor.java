@@ -1,7 +1,9 @@
 package com.niit.adminservice.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -14,18 +16,19 @@ public class Doctor {
     private int id;
     private String name;
     private String role;
-    private int clinicId;
+    @ManyToOne
+    @JoinColumn(name = "clinic_id", referencedColumnName = "id")
+    private Clinic clinic;
     @Lob
     private byte[] photoBlob;
     @Lob
     private String photoBase64;
-    @Column(name = "`desc`")
     private String desc;
 
-    public Doctor(String name, String role, int clinicId, byte[] photoBlob, String photoBase64, String desc) {
+    public Doctor(String name, String role, Clinic clinic, byte[] photoBlob, String photoBase64, String desc) {
         this.name = name;
         this.role = role;
-        this.clinicId = clinicId;
+        this.clinic = clinic;
         this.photoBlob = photoBlob;
         this.photoBase64 = photoBase64;
         this.desc = desc;

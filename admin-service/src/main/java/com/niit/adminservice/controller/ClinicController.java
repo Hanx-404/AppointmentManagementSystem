@@ -1,8 +1,10 @@
 package com.niit.adminservice.controller;
 
 import com.niit.adminservice.entity.Clinic;
+import com.niit.adminservice.entity.Department;
 import com.niit.adminservice.service.ClinicService;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -18,9 +20,16 @@ public class ClinicController {
 
     // 新增门诊
     @PostMapping("/addClinic")
-    public String addClinic(@RequestParam String name,
+    public String addClinic(Model model,
+                            @RequestParam String name,
                             @RequestParam int departmentId) {
-        Clinic clinic = new Clinic(name, departmentId);
+        Department department = clinicService.getDepartmentById(departmentId);
+        if (department == null) {
+            model.addAttribute("errorMsg", "找不到科室！");
+            return "redirect:/error";
+        }
+
+        Clinic clinic = new Clinic(name, department);
         clinicService.saveClinic(clinic);
         return "redirect:/management#clinics";
     }

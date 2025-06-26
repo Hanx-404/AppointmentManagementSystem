@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -15,10 +17,15 @@ public class Clinic {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     private String name;
-    private int departmentId;
+    @ManyToOne
+    @JoinColumn(name = "department_id", referencedColumnName = "id")
+    private Department department;
 
-    public Clinic(String name, int departmentId) {
+    @OneToMany(mappedBy = "clinic")
+    private List<Doctor> doctors;
+
+    public Clinic(String name, Department department) {
         this.name = name;
-        this.departmentId = departmentId;
+        this.department = department;
     }
 }
