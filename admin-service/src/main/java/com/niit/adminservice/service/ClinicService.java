@@ -5,6 +5,9 @@ import com.niit.adminservice.dao.DepartmentRepository;
 import com.niit.adminservice.entity.Clinic;
 import com.niit.adminservice.entity.Department;
 import com.niit.adminservice.entity.Result;
+import jakarta.security.auth.message.callback.SecretKeyCallback;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +24,14 @@ public class ClinicService {
         this.departmentRepository = departmentRepository;
     }
 
-    public List<Clinic> getAllClinics() {
+//    public Page<Clinic> getAllClinics(int clinicPage, int clinicSize){
+//        return clinicRepository.findAll(PageRequest.of(clinicPage,clinicSize));
+//    }
+
+    public List<Clinic> getAllClinics(){
         return clinicRepository.findAll();
     }
+
 
     public Clinic getClinicById(int id) {
         return clinicRepository.findById(id).isPresent() ? clinicRepository.findById(id).get() : null;

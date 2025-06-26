@@ -4,6 +4,8 @@ import com.niit.adminservice.dao.ClinicRepository;
 import com.niit.adminservice.dao.DoctorRepository;
 import com.niit.adminservice.entity.Doctor;
 import com.niit.adminservice.entity.Result;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,8 +21,8 @@ public class DoctorService {
         this.clinicRepository = clinicRepository;
     }
 
-    public List<Doctor> getAllDoctors() {
-        return doctorRepository.findAll();
+    public Page<Doctor> getAllDoctors(int doctorPage,int doctorSize) {
+        return doctorRepository.findAll(PageRequest.of(doctorPage, doctorSize));
     }
 
     public void saveDoctor(Doctor doctor) {
