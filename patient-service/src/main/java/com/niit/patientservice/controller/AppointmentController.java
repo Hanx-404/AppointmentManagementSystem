@@ -38,7 +38,10 @@ public class AppointmentController {
         char time = Objects.equals(timeStr, "AM") ? 'A' : 'P';
 
         Appointment appointment = new Appointment(patient, doctor, doctor.getClinic(), date, time);
-        appointmentService.saveAppointment(appointment);
-        return ResponseEntity.ok("挂号成功");
+        if (appointmentService.saveAppointment(appointment)) {
+            return ResponseEntity.ok("挂号成功");
+        } else {
+            return ResponseEntity.status(406).body("请勿重复挂号！");
+        }
     }
 }

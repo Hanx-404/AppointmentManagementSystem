@@ -13,7 +13,15 @@ public class AppointmentService {
         this.appointmentRepository = appointmentRepository;
     }
 
-    public void saveAppointment(Appointment appointment) {
+    public boolean saveAppointment(Appointment appointment) {
+        if (appointmentRepository.findByPatientIdAndDoctorIdAndClinicIdAndDateAndTime(
+                appointment.getPatient().getId(),
+                appointment.getDoctor().getId(),
+                appointment.getClinic().getId(),
+                appointment.getDate(),
+                appointment.getTime()
+        ) != null) return false;
         appointmentRepository.saveAndFlush(appointment);
+        return true;
     }
 }
