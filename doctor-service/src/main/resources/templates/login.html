@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>智能挂号管理-登录</title>
+    <link rel="stylesheet" href="/bootstrap-4.6.2-dist/css/bootstrap.min.css">
+    <script src="/jquery-3.7.1.min.js"></script>
+    <script src="/bootstrap-4.6.2-dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container mt-5" style="max-width: 600px;">
+    <ul class="nav nav-tabs" id="authTabs" role="tablist">
+        <li class="nav-item">
+            <a class="nav-link active" id="login-tab" data-toggle="tab" href="#login" role="tab">登录</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="register-tab" data-toggle="tab" href="#register" role="tab">注册</a>
+        </li>
+    </ul>
+
+    <div class="tab-content border-left border-right border-bottom p-4" id="authTabsContent">
+        <!-- 登录表单 -->
+        <div class="tab-pane fade show active" id="login" role="tabpanel">
+            <form th:action="@{/docotor/login}" method="post">
+                <div class="form-group">
+                    <label for="loginUsername">用户名</label>
+                    <input type="text" class="form-control" id="loginUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码</label>
+                    <input type="password" class="form-control" id="loginPassword" name="password" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">登录</button>
+            </form>
+        </div>
+
+        <!-- 注册表单 -->
+        <div class="tab-pane fade" id="register" role="tabpanel">
+            <form th:action="@{/doctor/register}" method="post">
+                <div class="form-group">
+                    <label for="regUsername">用户名</label>
+                    <input type="text" class="form-control" id="regUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">密码</label>
+                    <input type="password" class="form-control" id="regPassword" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="regDoctorId">医生信息 ID</label>
+                    <input type="number" class="form-control" id="regDoctorId" name="doctorId" min="0" required>
+                </div>
+                <button type="submit" class="btn btn-success btn-block">注册</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
