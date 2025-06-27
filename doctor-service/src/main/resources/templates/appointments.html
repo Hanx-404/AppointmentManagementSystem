@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>智能挂号管理-叫号</title>
+    <link rel="stylesheet" href="/bootstrap-4.6.2-dist/css/bootstrap.min.css">
+    <script src="/jquery-3.7.1.min.js"></script>
+    <script src="/bootstrap-4.6.2-dist/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container mt-5" id="appointments">
+    <h2 class="mb-4 text-center">叫号列表</h2>
+    <!-- 日程选择 -->
+    <ul class="nav nav-pills justify-content-center mb-4">
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date='2025-07-04', time='A')}">
+                07-04 星期五 上午
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date='2025-07-04', time='P')}">
+                07-04 星期五 下午
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date='2025-07-05', time='A')}">
+                07-05 星期六 上午
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date='2025-07-05', time='P')}">
+                07-05 星期六 下午
+            </a>
+        </li>
+    </ul>
+
+
+    <!-- 医生列表 -->
+    <div class="col-md-12 mb-4">
+        <table class="table table-bordered table-striped">
+            <thead class="thead-dark">
+            <tr>
+                <th>挂号人姓名</th>
+                <th>性别</th>
+                <th>年龄</th>
+                <th>状态</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="appointment: ${appointments}">
+                <td th:text="${appointment.patient.name}">挂号人姓名</td>
+                <td th:switch="${appointment.patient.gender}">
+                    <span th:case="true">男</span>
+                    <span th:case="false">女</span>
+                </td>
+                <td th:text="${appointment.patient.age}">年龄</td>
+                <td th:switch="${appointment.state.name()}">
+                    <span th:case="'WAITING'">等待中</span>
+                    <span th:case="'ACTIVE'">看病中</span>
+                    <span th:case="'COMPLETED'">已完成</span>
+                </td>
+                <td th:switch="${appointment.state.name()}">
+                    <a th:case="'WAITING'" class="btn btn-sm btn-outline-primary btn-call"
+                       th:attr="data-appointment-id=${appointment.id}">
+                        叫号
+                    </a>
+                    <a th:case="'ACTIVE'" class="btn btn-sm btn-outline-success btn-complete"
+                       th:attr="data-appointment-id=${appointment.id}">
+                        完成
+                    </a>
+                    <a th:case="'COMPLETED'" class="btn btn-sm btn-outline-dark"
+                       th:attr="data-appointment-id=${appointment.id}">
+                        已完成
+                    </a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    // 叫号
+    $(document).ready(function () {
+        $('.btn-call').on('click', function () {
+            const btn = $(this);
+            const id = btn.data('appointment-id');
+
+            $.ajax({
+                url: '/doctor/call/' + id,
+                method: 'POST',
+                success: function (response) {
+                    // // 更新状态文本
+                    // $('#status-' + id).text('已叫号');
+                    // // 禁用按钮
+                    // btn.prop('disabled', true);
+                    alert("叫号成功！")
+                    location.reload();
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText || '叫号失败');
+                }
+            });
+        });
+    });
+    // 标记完成
+    $(document).ready(function () {
+        $('.btn-complete').on('click', function () {
+            const btn = $(this);
+            const id = btn.data('appointment-id');
+
+            $.ajax({
+                url: '/doctor/complete/' + id,
+                method: 'POST',
+                success: function (response) {
+                    // // 更新状态文本
+                    // $('#status-' + id).text('已叫号');
+                    // // 禁用按钮
+                    // btn.prop('disabled', true);
+                    alert("已标记为完成！")
+                    location.reload();
+                },
+                error: function (xhr) {
+                    alert(xhr.responseText || '完成失败');
+                }
+            });
+        });
+    });
+    // 导航栏自动高亮
+    $(document).ready(function () {
+        const currentPath = window.location.pathname;
+        $('.nav-link').each(function () {
+            const link = $(this);
+            const href = link.attr('href');
+
+            if (currentPath === href) {
+                link.addClass('active');
+            } else {
+                link.removeClass('active');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
