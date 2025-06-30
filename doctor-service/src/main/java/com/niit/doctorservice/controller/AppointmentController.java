@@ -8,7 +8,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/doctor")
@@ -25,6 +30,8 @@ public class AppointmentController {
         Doctor doctor = (Doctor) session.getAttribute("doctor");
         int doctorId = doctor.getId();
         model.addAttribute("appointments", appointmentService.getAppointmentsByDoctorIdAndDateAndTime(doctorId, date, time));
+        model.addAttribute("timeSlots", appointmentService.generateTimeSlots());
+
         return "appointments";
     }
 

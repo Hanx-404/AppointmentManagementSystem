@@ -13,23 +13,14 @@
     <!-- 日程选择 -->
     <ul class="nav nav-pills justify-content-center mb-4">
         <li class="nav-item">
-            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date='2025-07-04', time='A')}">
-                07-04 星期五 上午
+            <a class="nav-link" th:href="@{/doctor/index}">
+                全部
             </a>
         </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date='2025-07-04', time='P')}">
-                07-04 星期五 下午
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date='2025-07-05', time='A')}">
-                07-05 星期六 上午
-            </a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date='2025-07-05', time='P')}">
-                07-05 星期六 下午
+        <li class="nav-item" th:each="slot: ${timeSlots}">
+            <a class="nav-link" th:href="@{/doctor/appointments/{date}/{time}(date=${slot.date}, time=${slot.time})}"
+               th:text="${slot.label}">
+                日程
             </a>
         </li>
     </ul>

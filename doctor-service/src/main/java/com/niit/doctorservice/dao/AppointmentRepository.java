@@ -9,5 +9,8 @@ import java.util.List;
 
 @Repository
 public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
+
+    List<Appointment> findByDoctorId(int doctorId);
+
     List<Appointment> findByDoctorIdAndAndDateAndTime(int doctorId, LocalDate date, char time);
 }

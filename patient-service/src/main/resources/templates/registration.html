@@ -21,17 +21,21 @@
     <h2 class="mb-4 text-center">选择医生</h2>
     <!-- 日程选择 -->
     <div class="text-center mb-4 btn-time-slot" id="time-slot-group">
-        <input type="radio" id="slot1" name="timeSlot" value="2025-07-04-AM">
-        <label for="slot1">07-04 星期五 上午</label>
+        <span th:each="slot, slotStat: ${timeSlots}">
+            <input type="radio" th:id="'slot' + ${slotStat.index}" name="timeSlot" th:value="${slot.datetime}">
+            <label th:for="'slot' + ${slotStat.index}" th:text="${slot.label}"></label>
+        </span>
+        <!-- <input type="radio" id="slot1" name="timeSlot" value="2025-07-04-AM"> -->
+        <!-- <label for="slot1">07-04 星期五 上午</label> -->
 
-        <input type="radio" id="slot2" name="timeSlot" value="2025-07-04-PM">
-        <label for="slot2">07-04 星期五 下午</label>
+        <!-- <input type="radio" id="slot2" name="timeSlot" value="2025-07-04-PM"> -->
+        <!-- <label for="slot2">07-04 星期五 下午</label> -->
 
-        <input type="radio" id="slot3" name="timeSlot" value="2025-07-05-AM">
-        <label for="slot3">07-05 星期六 上午</label>
+        <!-- <input type="radio" id="slot3" name="timeSlot" value="2025-07-05-AM"> -->
+        <!-- <label for="slot3">07-05 星期六 上午</label> -->
 
-        <input type="radio" id="slot4" name="timeSlot" value="2025-07-05-PM">
-        <label for="slot4">07-05 星期六 下午</label>
+        <!-- <input type="radio" id="slot4" name="timeSlot" value="2025-07-05-PM"> -->
+        <!-- <label for="slot4">07-05 星期六 下午</label> -->
     </div>
 
     <!-- 医生列表 -->
