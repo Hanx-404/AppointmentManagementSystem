@@ -19,19 +19,7 @@
 
 <div class="container mt-5" id="doctors">
     <h2 class="mb-4 text-center">选择医生</h2>
-    <!-- 日程选择 -->
-    <!-- <div class="text-center mb-4 btn-time-slot" id="time-slot-group"> -->
-    <!--     <span th:each="slot, slotStat: ${timeSlots}"> -->
-    <!--         <input type="radio" th:id="'slot' + ${slotStat.index}" name="timeSlot" th:value="${slot.datetime}"> -->
-    <!--         <label th:for="'slot' + ${slotStat.index}" th:text="${slot.label}"></label> -->
-    <!--     </span> -->
-    <!-- </div> -->
     <ul class="nav nav-pills justify-content-center mb-4" id="timeNav">
-        <!-- <li class="nav-item"> -->
-        <!--     <a class="nav-link" th:href="@{/registration/${clinicId}}"> -->
-        <!--         全部 -->
-        <!--     </a> -->
-        <!-- </li> -->
         <li class="nav-item" th:each="slot: ${timeSlots}">
             <a class="nav-link" th:href="@{/registration/{clinicId}/{date}/{time}(clinicId=${clinicId}, date=${slot.date}, time=${slot.time})}"
                th:attr="data-date=${slot.date}, data-time=${slot.time}"
@@ -95,19 +83,9 @@
     $(document).ready(function () {
         $('.btn-register').on('click', function () {
             const doctorId = $(this).data('doctor-id');
-            // const timeSlot = $('input[name="timeSlot"]:checked').val();
-            // const [date, time] = timeSlot.split(/-(?=[AP]M)/);
-            // const selectedDate = $('#timeNav').data('date');
-            // const selectedTime = $('#timeNav').data('time')
-
-            // if (!timeSlot) {
-            //     alert("请先选择预约的日期和时间段！");
-            //     return;
-            // }
-
             // 发送 AJAX 请求
             $.ajax({
-                url: '/registerAppointment',  // 请根据实际接口路径调整
+                url: '/registerAppointment',
                 method: 'POST',
                 data: {
                     doctorId: doctorId,
