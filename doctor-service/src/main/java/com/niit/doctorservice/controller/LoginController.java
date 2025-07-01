@@ -1,7 +1,6 @@
 package com.niit.doctorservice.controller;
 
 import com.niit.doctorservice.entity.Doctor;
-import com.niit.doctorservice.entity.DoctorAccount;
 import com.niit.doctorservice.service.LoginService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;

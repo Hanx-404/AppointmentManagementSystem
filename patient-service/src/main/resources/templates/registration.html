@@ -65,7 +65,7 @@
                     <a th:if="${schedule.count} < 5" class="btn btn-sm btn-outline-primary btn-register" th:attr="data-doctor-id=${schedule.doctor.id}">
                         挂号
                     </a>
-                    <a th:if="${schedule.count} >= 5" class="btn btn-sm btn-outline-secondary btn-disabled" disabled>
+                    <a th:if="${schedule.count} >= 5" class="btn btn-sm btn-outline-secondary btn-disabled disabled">
                         已满
                     </a>
                 </td>

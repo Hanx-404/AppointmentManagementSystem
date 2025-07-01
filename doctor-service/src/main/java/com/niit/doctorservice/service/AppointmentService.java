@@ -1,7 +1,9 @@
 package com.niit.doctorservice.service;
 
 import com.niit.doctorservice.dao.AppointmentRepository;
+import com.niit.doctorservice.dao.ScheduleRepository;
 import com.niit.doctorservice.entity.Appointment;
+import com.niit.doctorservice.entity.Schedule;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -15,9 +17,11 @@ import java.util.Map;
 public class AppointmentService {
 
     private final AppointmentRepository appointmentRepository;
+    private final ScheduleRepository scheduleRepository;
 
-    public AppointmentService(AppointmentRepository appointmentRepository) {
+    public AppointmentService(AppointmentRepository appointmentRepository, ScheduleRepository scheduleRepository) {
         this.appointmentRepository = appointmentRepository;
+        this.scheduleRepository = scheduleRepository;
     }
 
     public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
@@ -45,6 +49,13 @@ public class AppointmentService {
         }
         appointment.setState(Appointment.AppointmentState.COMPLETED);
         appointmentRepository.saveAndFlush(appointment);
+
+        Schedule schedule = scheduleRepository.findByDoctorAndDateAndTime(appointment.getDoctor(), appointment.getDate(), appointment.getTime())
+                .orElse(null);
+        if (schedule != null) {
+            schedule.setCount(schedule.getCount() - 1);
+            scheduleRepository.saveAndFlush(schedule);
+        }
         return true;
     }
 
