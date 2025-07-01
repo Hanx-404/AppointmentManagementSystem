@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医院挂号系统 - 病人信息管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="/js/auth.js"></script>
+    <style>
+        :root {
+            --primary-color: #3a7bd5;
+            --secondary-color: #00d2ff;
+            --accent-color: #ff6b6b;
+            --light-bg: #f8f9fa;
+            --dark-text: #2c3e50;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            height: 100vh;
+            position: fixed;
+            width: 250px;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-brand {
+            padding: 1.5rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-brand i {
+            margin-right: 10px;
+            font-size: 1.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 0;
+            list-style: none;
+        }
+
+        .sidebar-nav li a {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 0.8rem 1.5rem;
+            display: block;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav li a:hover,
+        .sidebar-nav li a.active {
+            color: white;
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-nav li a i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            margin-left: 250px;
+            padding: 2rem;
+        }
+
+        .card {
+            border: none;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            margin-bottom: 2rem;
+        }
+
+        .card-header {
+            background-color: white;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2d6bc5;
+        }
+
+        .btn-danger {
+            background-color: var(--accent-color);
+            border: none;
+        }
+
+        .table th {
+            border-top: none;
+            font-weight: 600;
+            color: var(--dark-text);
+        }
+
+        .badge-success {
+            background-color: #28a745;
+        }
+
+        .badge-warning {
+            background-color: #ffc107;
+        }
+
+        .badge-danger {
+            background-color: #dc3545;
+        }
+
+        .modal-header {
+            border-bottom: none;
+        }
+
+        .form-floating label {
+            color: #6c757d;
+        }
+
+        .action-btns .btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .tab-content {
+            padding: 1.5rem 0;
+        }
+
+        .nav-tabs .nav-link.active {
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 侧边栏导航 -->
+<div class="sidebar">
+    <div class="sidebar-brand">
+        <i class="bi bi-hospital"></i>
+        <span>医院挂号系统</span>
+    </div>
+    <ul class="sidebar-nav">
+        <li><a href="/index"><i class="bi bi-speedometer2"></i> 控制面板</a></li>
+        <li><a href="/index#clinics"><i class="bi bi-building"></i> 门诊管理</a></li>
+        <li><a href="/index#doctors"><i class="bi bi-person-badge"></i> 医生管理</a></li>
+        <li><a href="/index#appointments"><i class="bi bi-calendar-check"></i> 挂号记录</a></li>
+        <li><a href="/admin/patient" class="active"><i class="bi bi-people"></i> 病人信息管理</a></li>
+        <li><a href="#" class="logout-btn"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
+    </ul>
+</div>
+
+<!-- 主内容区 -->
+<div class="main-content">
+    <div class="container-fluid">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">病人信息管理</h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPatientModal">
+                    <i class="bi bi-plus"></i> 添加病人
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>用户名</th>
+                            <th>真实姓名</th>
+                            <th>性别</th>
+                            <th>年龄</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="patient : ${patients}">
+                            <td th:text="${patient.id}"></td>
+                            <td th:text="${patient.username}"></td>
+                            <td th:text="${patient.name}"></td>
+                            <td th:text="${patient.gender == 1 ? '男' : '女'}"></td>
+                            <td th:text="${patient.age}"></td>
+                            <td class="action-btns">
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editPatientModal"
+                                        th:attr="data-id=${patient.id}, data-username=${patient.username}, data-name=${patient.name}, data-gender=${patient.gender}, data-age=${patient.age}">
+                                    <i class="bi bi-pencil"></i> 编辑
+                                </button>
+                                <button class="btn btn-sm btn-outline-danger" th:onclick="confirmDelete('patient', [[${patient.id}]]);">
+                                    <i class="bi bi-trash"></i> 删除
+                                </button>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加病人模态框 -->
+<div class="modal fade" id="addPatientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加病人</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/admin/patient/add}" method="post">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="patientUsername" name="username" placeholder="用户名" required>
+                        <label for="patientUsername">用户名</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="patientPassword" name="password" placeholder="密码" required>
+                        <label for="patientPassword">密码</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="patientName" name="name" placeholder="真实姓名" required>
+                        <label for="patientName">真实姓名</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="patientGender" name="gender" required>
+                            <option value="" selected disabled>请选择性别</option>
+                            <option value="1">男</option>
+                            <option value="0">女</option>
+                        </select>
+                        <label for="patientGender">性别</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="patientAge" name="age" placeholder="年龄" required>
+                        <label for="patientAge">年龄</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 编辑病人模态框 -->
+<div class="modal fade" id="editPatientModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">编辑病人信息</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="editPatientForm" th:action="@{/admin/patient/edit}" method="post">
+                <input type="hidden" id="editPatientId" name="id">
+                <div class="modal-body">
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editPatientUsername" name="username" placeholder="用户名" required>
+                        <label for="editPatientUsername">用户名</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="password" class="form-control" id="editPatientPassword" name="password" placeholder="密码">
+                        <label for="editPatientPassword">密码</label>
+                        <small class="form-text text-muted">如不需要修改密码，请留空</small>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="text" class="form-control" id="editPatientName" name="name" placeholder="真实姓名" required>
+                        <label for="editPatientName">真实姓名</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="editPatientGender" name="gender" required>
+                            <option value="" disabled>请选择性别</option>
+                            <option value="1">男</option>
+                            <option value="0">女</option>
+                        </select>
+                        <label for="editPatientGender">性别</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="number" class="form-control" id="editPatientAge" name="age" placeholder="年龄" required>
+                        <label for="editPatientAge">年龄</label>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 删除确认模态框 -->
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">确认删除</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>您确定要删除这条病人记录吗？此操作不可撤销。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger">确认删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 初始化所有Bootstrap模态框
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            new bootstrap.Modal(modal);
+        });
+
+        // 初始化编辑模态框
+        initEditModals();
+
+        // 添加退出登录功能
+        document.querySelector('.logout-btn').addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // 发送退出登录请求
+            fetch('/admin/logout', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + localStorage.getItem('admin_token')
+                }
+            })
+                .then(response => {
+                    // 无论服务器响应如何，都清除token并跳转到登录页
+                    localStorage.removeItem('admin_token');
+                    window.location.href = '/admin/login';
+                })
+                .catch(error => {
+                    console.error('退出登录失败:', error);
+                    // 即使发生错误，也清除token并跳转
+                    localStorage.removeItem('admin_token');
+                    window.location.href = '/admin/login';
+                });
+        });
+    });
+
+    // 全局变量用于存储当前删除操作的信息
+    let currentDeleteInfo = {
+        type: null,
+        id: null,
+        url: null
+    };
+
+    // 初始化编辑模态框
+    function initEditModals() {
+        // 编辑病人模态框
+        const editPatientModal = document.getElementById('editPatientModal');
+        if (editPatientModal) {
+            editPatientModal.addEventListener('show.bs.modal', function(event) {
+                const button = event.relatedTarget;
+                const id = button.getAttribute('data-id');
+                const username = button.getAttribute('data-username');
+                const name = button.getAttribute('data-name');
+                const gender = button.getAttribute('data-gender');
+                const age = button.getAttribute('data-age');
+
+                // 设置表单字段值
+                this.querySelector('#editPatientId').value = id;
+                this.querySelector('#editPatientUsername').value = username;
+                this.querySelector('#editPatientName').value = name;
+                this.querySelector('#editPatientGender').value = gender;
+                this.querySelector('#editPatientAge').value = age;
+                // 密码字段留空，表示不修改
+                this.querySelector('#editPatientPassword').value = '';
+            });
+        }
+
+        // 设置删除确认按钮事件
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.addEventListener('click', function() {
+                if (currentDeleteInfo.url) {
+                    executeDelete(currentDeleteInfo.url);
+                }
+            });
+        }
+    }
+
+    // 确认删除函数
+    function confirmDelete(type, id) {
+        console.log("准备删除:", type, id);
+
+        let deleteUrl;
+        if (type === 'patient') {
+            deleteUrl = '/admin/patient/' + id;
+        } else {
+            console.error('未知的删除类型');
+            return;
+        }
+
+        // 存储当前删除信息
+        currentDeleteInfo.type = type;
+        currentDeleteInfo.id = id;
+        currentDeleteInfo.url = deleteUrl;
+
+        console.log("删除URL:", deleteUrl);
+
+        // 显示确认对话框
+        const confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+        confirmModal.show();
+    }
+
+    // 执行删除操作
+    function executeDelete(url) {
+        console.log("执行删除请求:", url);
+
+        // 发送DELETE请求
+        fetch(url, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => {
+                console.log("删除响应状态:", response.status);
+
+                if (response.ok) {
+                    // 关闭模态框
+                    bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();
+                    // 显示成功消息
+                    alert("删除成功!");
+                    // 刷新页面
+                    window.location.reload();
+                    return;
+                }
+
+                // 处理错误响应
+                return response.json().then(data => {
+                    throw new Error(data.message || '删除失败');
+                });
+            })
+            .catch(error => {
+                console.error("删除错误:", error);
+                alert("删除失败: " + error.message);
+            });
+    }
+</script>
+</body>
+</html>
