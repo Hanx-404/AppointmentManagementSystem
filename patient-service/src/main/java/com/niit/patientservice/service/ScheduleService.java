@@ -1,8 +1,8 @@
 package com.niit.patientservice.service;
 
-import com.niit.patientservice.dao.AppointmentRepository;
+import com.niit.patientservice.dao.DoctorRepository;
 import com.niit.patientservice.dao.ScheduleRepository;
-import com.niit.patientservice.entity.Appointment;
+import com.niit.patientservice.entity.Doctor;
 import com.niit.patientservice.entity.Schedule;
 import org.springframework.stereotype.Service;
 
@@ -14,30 +14,24 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-public class AppointmentService {
+public class ScheduleService {
 
-    private final AppointmentRepository appointmentRepository;
     private final ScheduleRepository scheduleRepository;
+    private final DoctorRepository doctorRepository;
 
-    public AppointmentService(AppointmentRepository appointmentRepository, ScheduleRepository scheduleRepository) {
-        this.appointmentRepository = appointmentRepository;
+    public ScheduleService(ScheduleRepository scheduleRepository, DoctorRepository doctorRepository) {
         this.scheduleRepository = scheduleRepository;
+        this.doctorRepository = doctorRepository;
     }
 
-    public boolean saveAppointment(Appointment appointment) {
-        if (appointmentRepository.findByPatientIdAndDoctorIdAndClinicIdAndDateAndTime(
-                appointment.getPatient().getId(),
-                appointment.getDoctor().getId(),
-                appointment.getClinic().getId(),
-                appointment.getDate(),
-                appointment.getTime()
-        ) != null) return false;
-        appointmentRepository.saveAndFlush(appointment);
-        Schedule schedule = scheduleRepository.findByDoctorAndDateAndTime(appointment.getDoctor(), appointment.getDate(), appointment.getTime())
-                .orElse(new Schedule(appointment, 0));
-        schedule.setCount(schedule.getCount() + 1);
-        scheduleRepository.saveAndFlush(schedule);
-        return true;
+    public List<Schedule> getSchedulesByClinicIdAndDateAndTime(int clinicId, LocalDate date, char time) {
+        List<Schedule> schedules = new ArrayList<>();
+        for (Doctor doctor : doctorRepository.findDoctorsByClinicId(clinicId)) {
+            Schedule schedule = scheduleRepository.findByDoctorAndDateAndTime(doctor, date, time)
+                    .orElse(new Schedule(doctor, date, time, 0));
+            schedules.add(schedule);
+        }
+        return schedules;
     }
 
     public List<Map<String, String>> generateTimeSlots() {
@@ -56,11 +50,13 @@ public class AppointmentService {
                 case SUNDAY -> "周日";
             };
             timeSlots.add(Map.of(
-                    "datetime", d.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "-AM",
+                    "date", d.toString(),
+                    "time", "A",
                     "label", d.format(DateTimeFormatter.ofPattern("MM-dd")) + " " + week + " 上午"
             ));
             timeSlots.add(Map.of(
-                    "datetime", d.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "-PM",
+                    "date", d.toString(),
+                    "time", "P",
                     "label", d.format(DateTimeFormatter.ofPattern("MM-dd")) + " " + week + " 下午"
             ));
         }

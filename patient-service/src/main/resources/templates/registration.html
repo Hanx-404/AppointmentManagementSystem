@@ -20,23 +20,26 @@
 <div class="container mt-5" id="doctors">
     <h2 class="mb-4 text-center">选择医生</h2>
     <!-- 日程选择 -->
-    <div class="text-center mb-4 btn-time-slot" id="time-slot-group">
-        <span th:each="slot, slotStat: ${timeSlots}">
-            <input type="radio" th:id="'slot' + ${slotStat.index}" name="timeSlot" th:value="${slot.datetime}">
-            <label th:for="'slot' + ${slotStat.index}" th:text="${slot.label}"></label>
-        </span>
-        <!-- <input type="radio" id="slot1" name="timeSlot" value="2025-07-04-AM"> -->
-        <!-- <label for="slot1">07-04 星期五 上午</label> -->
-
-        <!-- <input type="radio" id="slot2" name="timeSlot" value="2025-07-04-PM"> -->
-        <!-- <label for="slot2">07-04 星期五 下午</label> -->
-
-        <!-- <input type="radio" id="slot3" name="timeSlot" value="2025-07-05-AM"> -->
-        <!-- <label for="slot3">07-05 星期六 上午</label> -->
-
-        <!-- <input type="radio" id="slot4" name="timeSlot" value="2025-07-05-PM"> -->
-        <!-- <label for="slot4">07-05 星期六 下午</label> -->
-    </div>
+    <!-- <div class="text-center mb-4 btn-time-slot" id="time-slot-group"> -->
+    <!--     <span th:each="slot, slotStat: ${timeSlots}"> -->
+    <!--         <input type="radio" th:id="'slot' + ${slotStat.index}" name="timeSlot" th:value="${slot.datetime}"> -->
+    <!--         <label th:for="'slot' + ${slotStat.index}" th:text="${slot.label}"></label> -->
+    <!--     </span> -->
+    <!-- </div> -->
+    <ul class="nav nav-pills justify-content-center mb-4" id="timeNav">
+        <!-- <li class="nav-item"> -->
+        <!--     <a class="nav-link" th:href="@{/registration/${clinicId}}"> -->
+        <!--         全部 -->
+        <!--     </a> -->
+        <!-- </li> -->
+        <li class="nav-item" th:each="slot: ${timeSlots}">
+            <a class="nav-link" th:href="@{/registration/{clinicId}/{date}/{time}(clinicId=${clinicId}, date=${slot.date}, time=${slot.time})}"
+               th:attr="data-date=${slot.date}, data-time=${slot.time}"
+               th:text="${slot.label}">
+                日程
+            </a>
+        </li>
+    </ul>
 
     <!-- 医生列表 -->
     <div class="col-md-12 mb-4">
@@ -51,16 +54,19 @@
             </tr>
             </thead>
             <tbody>
-            <tr th:each="doctor: ${doctors}">
+            <tr th:each="schedule: ${schedule}">
                 <td>
-                    <img th:src="'data:image/jpeg;base64,'+${doctor.photoBase64}" class="doctor-photo" alt="医生照片"/>
+                    <img th:src="'data:image/jpeg;base64,'+${schedule.doctor.photoBase64}" class="doctor-photo" alt="医生照片"/>
                 </td>
-                <td th:text="${doctor.name}">医生姓名</td>
-                <td th:text="${doctor.role}">医生职称</td>
-                <td th:text="${doctor.desc}">医生简介</td>
+                <td th:text="${schedule.doctor.name}">医生姓名</td>
+                <td th:text="${schedule.doctor.role}">医生职称</td>
+                <td th:text="${schedule.doctor.desc}">医生简介</td>
                 <td>
-                    <a class="btn btn-sm btn-outline-primary btn-register" th:attr="data-doctor-id=${doctor.id}">
+                    <a th:if="${schedule.count} < 5" class="btn btn-sm btn-outline-primary btn-register" th:attr="data-doctor-id=${schedule.doctor.id}">
                         挂号
+                    </a>
+                    <a th:if="${schedule.count} >= 5" class="btn btn-sm btn-outline-secondary btn-disabled" disabled>
+                        已满
                     </a>
                 </td>
             </tr>
@@ -69,17 +75,35 @@
     </div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    const date = [[${date}]];
+    const time = [[${time}]];
+    // 导航栏自动高亮
+    $(document).ready(function () {
+        const currentPath = window.location.pathname;
+        $('.nav-link').each(function () {
+            const link = $(this);
+            const href = link.attr('href');
+
+            if (currentPath === href) {
+                link.addClass('active');
+            } else {
+                link.removeClass('active');
+            }
+        });
+    });
     $(document).ready(function () {
         $('.btn-register').on('click', function () {
             const doctorId = $(this).data('doctor-id');
-            const timeSlot = $('input[name="timeSlot"]:checked').val();
-            const [date, time] = timeSlot.split(/-(?=[AP]M)/);
+            // const timeSlot = $('input[name="timeSlot"]:checked').val();
+            // const [date, time] = timeSlot.split(/-(?=[AP]M)/);
+            // const selectedDate = $('#timeNav').data('date');
+            // const selectedTime = $('#timeNav').data('time')
 
-            if (!timeSlot) {
-                alert("请先选择预约的日期和时间段！");
-                return;
-            }
+            // if (!timeSlot) {
+            //     alert("请先选择预约的日期和时间段！");
+            //     return;
+            // }
 
             // 发送 AJAX 请求
             $.ajax({
