@@ -8,13 +8,23 @@ spring:
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/appointment_management_system?serverTimezone=GMT%2B8&characterEncoding=utf-8
     username: root
-    password: root
+    password: SQLpassword
     driver-class-name: com.mysql.cj.jdbc.Driver
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: redispassword
   # Nacos 配置
   cloud:
     nacos:
       discovery:
-        server-addr: 127.0.0.1:8848 # nacos server address
-      config:
         server-addr: 127.0.0.1:8848
-        file-extension: yaml
+    sentinel:
+      transport:
+        dashboard: localhost:8080
+        port: 8719
+#Jwt配置信息
+jwt:
+  secret: PZXrpYuSMUHfUGhP2MTG5QwAkh3FJ7tVnXd4bRKeLjC9vqBsDNEmW6gzc8y5xTZ7JaS4K9w3LYPQVn6RM2fHgExAZDCGquy8FVv5
+  expiration: 3600000

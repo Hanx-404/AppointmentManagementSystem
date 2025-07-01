@@ -1,23 +1,23 @@
-server:
-  port: 1522
-
-#连接数据库信息
-spring:
-  application:
-    name: admin-service #注册 Nacos 服务的名称
-  datasource:
-    url: jdbc:mysql://127.0.0.1:3306/appointment_management_system?serverTimezone=GMT%2B8&characterEncoding=utf-8
-    username: root
-    password: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
-  data:
-    redis:
-      host: localhost
-      port: 6379
-      password: niit
-
-#Jwt配置信息
-jwt:
-  secret: PZXrpYuSMUHfUGhP2MTG5QwAkh3FJ7tVnXd4bRKeLjC9vqBsDNEmW6gzc8y5xTZ7JaS4K9w3LYPQVn6RM2fHgExAZDCGquy8FVv5
-  expiration: 3600000
+# server:
+#   port: 1522
+#
+# #连接数据库信息
+# spring:
+#   application:
+#     name: admin-service #注册 Nacos 服务的名称
+#   datasource:
+#     url: jdbc:mysql://127.0.0.1:3306/appointment_management_system?serverTimezone=GMT%2B8&characterEncoding=utf-8
+#     username: root
+#     password: SQLpassword
+#     driver-class-name: com.mysql.cj.jdbc.Driver
+#   data:
+#     redis:
+#       host: localhost
+#       port: 6379
+#       password: redispassword
+#
+# #Jwt配置信息
+# jwt:
+#   secret: PZXrpYuSMUHfUGhP2MTG5QwAkh3FJ7tVnXd4bRKeLjC9vqBsDNEmW6gzc8y5xTZ7JaS4K9w3LYPQVn6RM2fHgExAZDCGquy8FVv5
+#   expiration: 3600000
 
