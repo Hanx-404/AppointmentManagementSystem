@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.time.LocalDate;
-import java.util.Objects;
 
 @Controller
 public class AppointmentController {
@@ -29,13 +28,11 @@ public class AppointmentController {
     @PostMapping("/registerAppointment")
     @ResponseBody
     public ResponseEntity<String> registerAppointment(@RequestParam("doctorId") int doctorId,
-                                                      @RequestParam("date") String dateStr,
-                                                      @RequestParam("time") String timeStr,
+                                                      @RequestParam("date") LocalDate date,
+                                                      @RequestParam("time") char time,
                                                       HttpSession session) {
         Patient patient = (Patient) session.getAttribute("patient");
         Doctor doctor = doctorService.getDoctorById(doctorId);
-        LocalDate date = LocalDate.parse(dateStr);
-        char time = Objects.equals(timeStr, "AM") ? 'A' : 'P';
 
         Appointment appointment = new Appointment(patient, doctor, doctor.getClinic(), date, time);
         if (appointmentService.saveAppointment(appointment)) {

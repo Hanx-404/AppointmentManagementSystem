@@ -1,21 +1,23 @@
 package com.niit.patientservice.controller;
 
 import com.niit.patientservice.service.ClinicService;
-import com.niit.patientservice.service.DoctorService;
+import com.niit.patientservice.service.ScheduleService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import java.time.LocalDate;
+
 @Controller
 public class IndexController {
 
     private final ClinicService clinicService;
-    private final DoctorService doctorService;
+    private final ScheduleService scheduleService;
 
-    public IndexController(ClinicService clinicService, DoctorService doctorService) {
+    public IndexController(ClinicService clinicService, ScheduleService scheduleService) {
         this.clinicService = clinicService;
-        this.doctorService = doctorService;
+        this.scheduleService = scheduleService;
     }
 
     @GetMapping("/login")
@@ -30,16 +32,23 @@ public class IndexController {
         return "index";
     }
 
-    @GetMapping("/clinic/{clinicId}")
-    public String clinic(@PathVariable int clinicId, Model model) {
-        model.addAttribute("doctors", doctorService.getDoctorsByClinicId(clinicId));
-        return "registration";
+    @GetMapping("/registration/{clinicId}")
+    public String registrationDefault(@PathVariable int clinicId, Model model) {
+        LocalDate date = LocalDate.now();
+        char time = 'A';
+        return "redirect:/registration/" + clinicId + "/" + date + "/" + time;
     }
 
-    @GetMapping("/clinic/{clinicId}/date/{date}/time/{time}")
-    public String clinic(@PathVariable int clinicId, @PathVariable String date, @PathVariable char time, Model model) {
-        // TODO
-        model.addAttribute("doctors", doctorService.getDoctorsByClinicId(clinicId));
+    @GetMapping("/registration/{clinicId}/{date}/{time}")
+    public String registration(@PathVariable int clinicId,
+                               @PathVariable LocalDate date,
+                               @PathVariable char time,
+                               Model model) {
+        model.addAttribute("date", date);
+        model.addAttribute("time", time);
+        model.addAttribute("clinicId", clinicId);
+        model.addAttribute("timeSlots", scheduleService.generateTimeSlots());
+        model.addAttribute("schedule", scheduleService.getSchedulesByClinicIdAndDateAndTime(clinicId, date, time));
         return "registration";
     }
 }

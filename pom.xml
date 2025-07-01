@@ -23,6 +23,7 @@
         <module>patient-service</module>
         <module>admin-service</module>
         <module>doctor-service</module>
+        <module>gateway</module>
     </modules>
 
     <properties>

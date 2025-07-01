@@ -1,9 +1,9 @@
-package com.niit.patientservice.service;
+package com.niit.doctorservice.service;
 
-import com.niit.patientservice.dao.AppointmentRepository;
-import com.niit.patientservice.dao.ScheduleRepository;
-import com.niit.patientservice.entity.Appointment;
-import com.niit.patientservice.entity.Schedule;
+import com.niit.doctorservice.dao.AppointmentRepository;
+import com.niit.doctorservice.dao.ScheduleRepository;
+import com.niit.doctorservice.entity.Appointment;
+import com.niit.doctorservice.entity.Schedule;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
@@ -24,19 +24,38 @@ public class AppointmentService {
         this.scheduleRepository = scheduleRepository;
     }
 
-    public boolean saveAppointment(Appointment appointment) {
-        if (appointmentRepository.findByPatientIdAndDoctorIdAndClinicIdAndDateAndTime(
-                appointment.getPatient().getId(),
-                appointment.getDoctor().getId(),
-                appointment.getClinic().getId(),
-                appointment.getDate(),
-                appointment.getTime()
-        ) != null) return false;
+    public List<Appointment> getAppointmentsByDoctorId(int doctorId) {
+        return appointmentRepository.findByDoctorId(doctorId);
+    }
+
+    public List<Appointment> getAppointmentsByDoctorIdAndDateAndTime(int doctorId, LocalDate date, char time) {
+        return appointmentRepository.findByDoctorIdAndAndDateAndTime(doctorId, date, time);
+    }
+
+    public boolean call(int id) {
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        if (appointment == null || appointment.getState() != Appointment.AppointmentState.WAITING) {
+            return false;
+        }
+        appointment.setState(Appointment.AppointmentState.ACTIVE);
         appointmentRepository.saveAndFlush(appointment);
+        return true;
+    }
+
+    public boolean complete(int id) {
+        Appointment appointment = appointmentRepository.findById(id).orElse(null);
+        if (appointment == null || appointment.getState() != Appointment.AppointmentState.ACTIVE) {
+            return false;
+        }
+        appointment.setState(Appointment.AppointmentState.COMPLETED);
+        appointmentRepository.saveAndFlush(appointment);
+
         Schedule schedule = scheduleRepository.findByDoctorAndDateAndTime(appointment.getDoctor(), appointment.getDate(), appointment.getTime())
-                .orElse(new Schedule(appointment, 0));
-        schedule.setCount(schedule.getCount() + 1);
-        scheduleRepository.saveAndFlush(schedule);
+                .orElse(null);
+        if (schedule != null) {
+            schedule.setCount(schedule.getCount() - 1);
+            scheduleRepository.saveAndFlush(schedule);
+        }
         return true;
     }
 
@@ -56,11 +75,13 @@ public class AppointmentService {
                 case SUNDAY -> "周日";
             };
             timeSlots.add(Map.of(
-                    "datetime", d.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "-AM",
+                    "date", d.toString(),
+                    "time", "A",
                     "label", d.format(DateTimeFormatter.ofPattern("MM-dd")) + " " + week + " 上午"
             ));
             timeSlots.add(Map.of(
-                    "datetime", d.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")) + "-PM",
+                    "date", d.toString(),
+                    "time", "P",
                     "label", d.format(DateTimeFormatter.ofPattern("MM-dd")) + " " + week + " 下午"
             ));
         }
