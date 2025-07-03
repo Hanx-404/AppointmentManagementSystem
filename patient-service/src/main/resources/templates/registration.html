@@ -34,7 +34,7 @@
         <table class="table table-bordered table-striped">
             <thead class="thead-dark">
             <tr>
-                <th>照片</th>
+                <th class="mb">照片</th>
                 <th>姓名</th>
                 <th>职称</th>
                 <th>简介</th>
@@ -46,14 +46,14 @@
                 <td>
                     <img th:src="'data:image/jpeg;base64,'+${schedule.doctor.photoBase64}" class="doctor-photo" alt="医生照片"/>
                 </td>
-                <td th:text="${schedule.doctor.name}">医生姓名</td>
-                <td th:text="${schedule.doctor.role}">医生职称</td>
+                <td style="white-space: nowrap;" th:text="${schedule.doctor.name}">医生姓名</td>
+                <td style="white-space: nowrap;" th:text="${schedule.doctor.role}">医生职称</td>
                 <td th:text="${schedule.doctor.desc}">医生简介</td>
                 <td>
-                    <a th:if="${schedule.count} < 5" class="btn btn-sm btn-outline-primary btn-register" th:attr="data-doctor-id=${schedule.doctor.id}">
+                    <a style="white-space: nowrap;" th:if="${schedule.count} < 5" class="btn btn-sm btn-outline-primary btn-register" th:attr="data-doctor-id=${schedule.doctor.id}">
                         挂号
                     </a>
-                    <a th:if="${schedule.count} >= 5" class="btn btn-sm btn-outline-secondary btn-disabled disabled">
+                    <a style="white-space: nowrap;" th:if="${schedule.count} >= 5" class="btn btn-sm btn-outline-secondary btn-disabled disabled">
                         已满
                     </a>
                 </td>

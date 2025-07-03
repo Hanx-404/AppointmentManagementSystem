@@ -27,7 +27,6 @@ public class IndexController {
 
     @GetMapping("/home")
     public String home(Model model) {
-        // model.addAttribute("departments", clinicService.getAllDepartments());
         model.addAttribute("clinicsMap", clinicService.getAllClinicsSorted());
         return "index";
     }
