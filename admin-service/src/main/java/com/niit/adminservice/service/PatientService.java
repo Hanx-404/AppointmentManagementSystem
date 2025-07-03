@@ -3,6 +3,8 @@ package com.niit.adminservice.service;
 import com.niit.adminservice.dao.PatientRepository;
 import com.niit.adminservice.entity.Patient;
 import com.niit.adminservice.entity.Result;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,9 +23,8 @@ public class PatientService {
         this.patientRepository=patientRepository;
     }
 
-    public List<Patient> getAllPatient(){
-        List<Patient> all = patientRepository.findAll();
-        return all;
+    public Page<Patient> getAllPatient(int page, int size){
+        return patientRepository.findAll(PageRequest.of(page,size));
     }
 
     public Result<Boolean> insertPatient(Patient patient){

@@ -3,6 +3,7 @@ package com.niit.adminservice.controller;
 import com.niit.adminservice.entity.Patient;
 import com.niit.adminservice.entity.Result;
 import com.niit.adminservice.service.PatientService;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,14 @@ public class PatientController {
     }
 
     @GetMapping()
-    public String getAllPatient(Model model){
-        List<Patient> patients = patientService.getAllPatient();
-        model.addAttribute("patients",patients);
+    public String getAllPatient(Model model,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "15") int size){
+        Page<Patient> patientPage = patientService.getAllPatient(page, size);
+        model.addAttribute("patients", patientPage.getContent());
+        model.addAttribute("currentPage", patientPage.getNumber());
+        model.addAttribute("totalPages", patientPage.getTotalPages());
+        model.addAttribute("totalItems", patientPage.getTotalElements());
         return "patient-management";
     }
 

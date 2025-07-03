@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>医院挂号系统 - 病人信息管理</title>
+    <title>医院挂号系统 - 挂号记录管理</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -169,8 +169,8 @@
         <li><a href="/index"><i class="bi bi-speedometer2"></i> 控制面板</a></li>
         <li><a href="/index#clinics"><i class="bi bi-building"></i> 门诊管理</a></li>
         <li><a href="/index#doctors"><i class="bi bi-person-badge"></i> 医生管理</a></li>
-        <li><a href="/index#appointments"><i class="bi bi-calendar-check"></i> 挂号记录</a></li>
-        <li><a href="/admin/patient" class="active"><i class="bi bi-people"></i> 病人信息管理</a></li>
+        <li><a href="/admin/appointment" class="active"><i class="bi bi-calendar-check"></i> 挂号记录</a></li>
+        <li><a href="/admin/patient"><i class="bi bi-people"></i> 病人信息管理</a></li>
         <li><a href="#" class="logout-btn"><i class="bi bi-box-arrow-right"></i> 退出登录</a></li>
     </ul>
 </div>
@@ -180,9 +180,9 @@
     <div class="container-fluid">
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">病人信息管理</h5>
-                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addPatientModal">
-                    <i class="bi bi-plus"></i> 添加病人
+                <h5 class="mb-0">挂号记录管理</h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addAppointmentModal">
+                    <i class="bi bi-plus"></i> 添加挂号
                 </button>
             </div>
             <div class="card-body">
@@ -191,27 +191,43 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>用户名</th>
-                            <th>真实姓名</th>
-                            <th>性别</th>
-                            <th>年龄</th>
+                            <th>病人</th>
+                            <th>医生</th>
+                            <th>门诊</th>
+                            <th>预约日期</th>
+                            <th>预约时段</th>
+                            <th>状态</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
-                        <tr th:each="patient : ${patients}">
-                            <td th:text="${patient.id}"></td>
-                            <td th:text="${patient.username}"></td>
-                            <td th:text="${patient.name}"></td>
-                            <td th:text="${patient.gender == 1 ? '男' : '女'}"></td>
-                            <td th:text="${patient.age}"></td>
+                        <tr th:each="appointment : ${appointments}">
+                            <td th:text="${appointment.id}"></td>
+                            <td th:text="${appointment.patient != null ? appointment.patient.name : ''}"></td>
+                            <td th:text="${appointment.doctor != null ? appointment.doctor.name : ''}"></td>
+                            <td th:text="${appointment.clinic != null ? appointment.clinic.name : ''}"></td>
+                            <td th:text="${#temporals.format(appointment.date, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${appointment.time == '1' ? '上午' : '下午'}"></td>
+                            <td>
+                                <span th:class="${appointment.state == T(com.niit.adminservice.entity.Appointment.AppointmentState).COMPLETED ? 'badge bg-success' :
+                                             (appointment.state == T(com.niit.adminservice.entity.Appointment.AppointmentState).WAITING ? 'badge bg-warning' : 'badge bg-info')}"
+                                      th:text="${appointment.state == T(com.niit.adminservice.entity.Appointment.AppointmentState).WAITING ? '待就诊' :
+                                               (appointment.state == T(com.niit.adminservice.entity.Appointment.AppointmentState).ACTIVE ? '就诊中' : '已完成')}">
+                                </span>
+                            </td>
                             <td class="action-btns">
-                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editPatientModal"
-                                        th:attr="data-id=${patient.id}, data-username=${patient.username}, data-name=${patient.name}, data-gender=${patient.gender}, data-age=${patient.age}">
-                                    <i class="bi bi-pencil"></i> 编辑
+                                <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editAppointmentModal"
+                                        th:attr="data-id=${appointment.id},
+                                                data-patient-id=${appointment.patient != null ? appointment.patient.id : ''},
+                                                data-doctor-id=${appointment.doctor != null ? appointment.doctor.id : ''},
+                                                data-clinic-id=${appointment.clinic != null ? appointment.clinic.id : ''},
+                                                data-date=${#temporals.format(appointment.date, 'yyyy-MM-dd')},
+                                                data-time=${appointment.time},
+                                                data-state=${appointment.state}">
+                                    <i class="bi bi-pencil"></i>
                                 </button>
-                                <button class="btn btn-sm btn-outline-danger" th:onclick="confirmDelete('patient', [[${patient.id}]]);">
-                                    <i class="bi bi-trash"></i> 删除
+                                <button class="btn btn-sm btn-outline-danger" th:onclick="confirmDelete('appointment', [[${appointment.id}]]);">
+                                    <i class="bi bi-trash"></i>
                                 </button>
                             </td>
                         </tr>
@@ -221,17 +237,17 @@
                     <!-- 分页导航 -->
                     <div class="d-flex justify-content-between align-items-center mt-3">
                         <div>
-                            显示 <span th:text="${patients.size()}"></span> 条，共 <span th:text="${totalItems}"></span> 条记录
+                            显示 <span th:text="${appointments.size()}"></span> 条，共 <span th:text="${totalItems}"></span> 条记录
                         </div>
-                        <nav aria-label="病人列表分页">
+                        <nav aria-label="预约列表分页">
                             <ul class="pagination">
                                 <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                    <a class="page-link" th:href="@{/admin/patient(page=0, size=${param.size})}" aria-label="首页">
+                                    <a class="page-link" th:href="@{/admin/appointment(page=0, size=${param.size})}" aria-label="首页">
                                         <span aria-hidden="true">&laquo;&laquo;</span>
                                     </a>
                                 </li>
                                 <li class="page-item" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
-                                    <a class="page-link" th:href="@{/admin/patient(page=${currentPage - 1}, size=${param.size})}" aria-label="上一页">
+                                    <a class="page-link" th:href="@{/admin/appointment(page=${currentPage - 1}, size=${param.size})}" aria-label="上一页">
                                         <span aria-hidden="true">&laquo;</span>
                                     </a>
                                 </li>
@@ -240,16 +256,16 @@
                                 <li class="page-item" th:each="i: ${#numbers.sequence(0, totalPages - 1)}"
                                     th:if="${(i >= currentPage - 2) && (i <= currentPage + 2)}"
                                     th:classappend="${i == currentPage ? 'active' : ''}">
-                                    <a class="page-link" th:href="@{/admin/patient(page=${i}, size=${param.size})}" th:text="${i + 1}"></a>
+                                    <a class="page-link" th:href="@{/admin/appointment(page=${i}, size=${param.size})}" th:text="${i + 1}"></a>
                                 </li>
 
                                 <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                                    <a class="page-link" th:href="@{/admin/patient(page=${currentPage + 1}, size=${param.size})}" aria-label="下一页">
+                                    <a class="page-link" th:href="@{/admin/appointment(page=${currentPage + 1}, size=${param.size})}" aria-label="下一页">
                                         <span aria-hidden="true">&raquo;</span>
                                     </a>
                                 </li>
                                 <li class="page-item" th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
-                                    <a class="page-link" th:href="@{/admin/patient(page=${totalPages - 1}, size=${param.size})}" aria-label="末页">
+                                    <a class="page-link" th:href="@{/admin/appointment(page=${totalPages - 1}, size=${param.size})}" aria-label="末页">
                                         <span aria-hidden="true">&raquo;&raquo;</span>
                                     </a>
                                 </li>
@@ -262,53 +278,74 @@
                                 每页 <span th:text="${param.size ?: 10}"></span> 条
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="pageSizeDropdown">
-                                <li><a class="dropdown-item" th:href="@{/admin/patient(page=0, size=5)}">每页 5 条</a></li>
-                                <li><a class="dropdown-item" th:href="@{/admin/patient(page=0, size=10)}">每页 10 条</a></li>
-                                <li><a class="dropdown-item" th:href="@{/admin/patient(page=0, size=20)}">每页 20 条</a></li>
-                                <li><a class="dropdown-item" th:href="@{/admin/patient(page=0, size=50)}">每页 50 条</a></li>
+                                <li><a class="dropdown-item" th:href="@{/admin/appointment(page=0, size=5)}">每页 5 条</a></li>
+                                <li><a class="dropdown-item" th:href="@{/admin/appointment(page=0, size=10)}">每页 10 条</a></li>
+                                <li><a class="dropdown-item" th:href="@{/admin/appointment(page=0, size=20)}">每页 20 条</a></li>
+                                <li><a class="dropdown-item" th:href="@{/admin/appointment(page=0, size=50)}">每页 50 条</a></li>
                             </ul>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- 添加病人模态框 -->
-<div class="modal fade" id="addPatientModal" tabindex="-1" aria-hidden="true">
+<!-- 添加挂号模态框 -->
+<div class="modal fade" id="addAppointmentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">添加病人</h5>
+                <h5 class="modal-title">添加挂号记录</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form th:action="@{/admin/patient/add}" method="post">
+            <form th:action="@{/admin/appointment/add}" method="post">
                 <div class="modal-body">
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="patientUsername" name="username" placeholder="用户名" required>
-                        <label for="patientUsername">用户名</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="patientPassword" name="password" placeholder="密码" required>
-                        <label for="patientPassword">密码</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="patientName" name="name" placeholder="真实姓名" required>
-                        <label for="patientName">真实姓名</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="patientGender" name="gender" required>
-                            <option value="" selected disabled>请选择性别</option>
-                            <option value="1">男</option>
-                            <option value="0">女</option>
+                        <select class="form-select" id="patientId" name="patient.id" required>
+                            <option value="" selected disabled>请选择病人</option>
+                            <option th:each="patient : ${patients}" th:value="${patient.id}"
+                                    th:text="${patient.name + ' (' + patient.username + ')'}"></option>
                         </select>
-                        <label for="patientGender">性别</label>
+                        <label for="patientId">病人</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="number" class="form-control" id="patientAge" name="age" placeholder="年龄" required>
-                        <label for="patientAge">年龄</label>
+                        <select class="form-select" id="doctorId" name="doctor.id" required>
+                            <option value="" selected disabled>请选择医生</option>
+                            <option th:each="doctor : ${doctors}" th:value="${doctor.id}"
+                                    th:text="${doctor.name + ' - ' + doctor.role}"></option>
+                        </select>
+                        <label for="doctorId">医生</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="clinicId" name="clinic.id" required>
+                            <option value="" selected disabled>请选择门诊</option>
+                            <option th:each="clinic : ${clinics}" th:value="${clinic.id}"
+                                    th:text="${clinic.name}"></option>
+                        </select>
+                        <label for="clinicId">门诊</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="date" name="date" placeholder="预约日期" required>
+                        <label for="date">预约日期</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="time" name="time" required>
+                            <option value="" selected disabled>请选择时段</option>
+                            <option value="1">上午</option>
+                            <option value="2">下午</option>
+                        </select>
+                        <label for="time">预约时段</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="state" name="state" required>
+                            <option value="" selected disabled>请选择状态</option>
+                            <option th:each="stateOption : ${states}" th:value="${stateOption}"
+                                    th:text="${stateOption == T(com.niit.adminservice.entity.Appointment.AppointmentState).WAITING ? '待就诊' :
+                                             (stateOption == T(com.niit.adminservice.entity.Appointment.AppointmentState).ACTIVE ? '就诊中' : '已完成')}">
+                            </option>
+                        </select>
+                        <label for="state">状态</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -320,41 +357,62 @@
     </div>
 </div>
 
-<!-- 编辑病人模态框 -->
-<div class="modal fade" id="editPatientModal" tabindex="-1" aria-hidden="true">
+<!-- 编辑挂号模态框 -->
+<div class="modal fade" id="editAppointmentModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">编辑病人信息</h5>
+                <h5 class="modal-title">编辑挂号记录</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form id="editPatientForm" th:action="@{/admin/patient/edit}" method="post">
-                <input type="hidden" id="editPatientId" name="id">
+            <form id="editAppointmentForm" th:action="@{/admin/appointment/edit}" method="post">
+                <input type="hidden" id="editAppointmentId" name="id">
                 <div class="modal-body">
                     <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="editPatientUsername" name="username" placeholder="用户名" required>
-                        <label for="editPatientUsername">用户名</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="password" class="form-control" id="editPatientPassword" name="password" placeholder="密码">
-                        <label for="editPatientPassword">密码</label>
-                        <small class="form-text text-muted">如不需要修改密码，请留空</small>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input type="text" class="form-control" id="editPatientName" name="name" placeholder="真实姓名" required>
-                        <label for="editPatientName">真实姓名</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select class="form-select" id="editPatientGender" name="gender" required>
-                            <option value="" disabled>请选择性别</option>
-                            <option value="1">男</option>
-                            <option value="0">女</option>
+                        <select class="form-select" id="editPatientId" name="patient.id" required>
+                            <option value="" disabled>请选择病人</option>
+                            <option th:each="patient : ${patients}" th:value="${patient.id}"
+                                    th:text="${patient.name + ' (' + patient.username + ')'}"></option>
                         </select>
-                        <label for="editPatientGender">性别</label>
+                        <label for="editPatientId">病人</label>
                     </div>
                     <div class="form-floating mb-3">
-                        <input type="number" class="form-control" id="editPatientAge" name="age" placeholder="年龄" required>
-                        <label for="editPatientAge">年龄</label>
+                        <select class="form-select" id="editDoctorId" name="doctor.id" required>
+                            <option value="" disabled>请选择医生</option>
+                            <option th:each="doctor : ${doctors}" th:value="${doctor.id}"
+                                    th:text="${doctor.name + ' - ' + doctor.role}"></option>
+                        </select>
+                        <label for="editDoctorId">医生</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="editClinicId" name="clinic.id" required>
+                            <option value="" disabled>请选择门诊</option>
+                            <option th:each="clinic : ${clinics}" th:value="${clinic.id}"
+                                    th:text="${clinic.name}"></option>
+                        </select>
+                        <label for="editClinicId">门诊</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <input type="date" class="form-control" id="editDate" name="date" placeholder="预约日期" required>
+                        <label for="editDate">预约日期</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="editTime" name="time" required>
+                            <option value="" disabled>请选择时段</option>
+                            <option value="1">上午</option>
+                            <option value="2">下午</option>
+                        </select>
+                        <label for="editTime">预约时段</label>
+                    </div>
+                    <div class="form-floating mb-3">
+                        <select class="form-select" id="editState" name="state" required>
+                            <option value="" disabled>请选择状态</option>
+                            <option th:each="stateOption : ${states}" th:value="${stateOption}"
+                                    th:text="${stateOption == T(com.niit.adminservice.entity.Appointment.AppointmentState).WAITING ? '待就诊' :
+                                             (stateOption == T(com.niit.adminservice.entity.Appointment.AppointmentState).ACTIVE ? '就诊中' : '已完成')}">
+                            </option>
+                        </select>
+                        <label for="editState">状态</label>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -375,7 +433,7 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <p>您确定要删除这条病人记录吗？此操作不可撤销。</p>
+                <p>您确定要删除这条挂号记录吗？此操作不可撤销。</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
@@ -432,25 +490,27 @@
 
     // 初始化编辑模态框
     function initEditModals() {
-        // 编辑病人模态框
-        const editPatientModal = document.getElementById('editPatientModal');
-        if (editPatientModal) {
-            editPatientModal.addEventListener('show.bs.modal', function(event) {
+        // 编辑挂号模态框
+        const editAppointmentModal = document.getElementById('editAppointmentModal');
+        if (editAppointmentModal) {
+            editAppointmentModal.addEventListener('show.bs.modal', function(event) {
                 const button = event.relatedTarget;
                 const id = button.getAttribute('data-id');
-                const username = button.getAttribute('data-username');
-                const name = button.getAttribute('data-name');
-                const gender = button.getAttribute('data-gender');
-                const age = button.getAttribute('data-age');
+                const patientId = button.getAttribute('data-patient-id');
+                const doctorId = button.getAttribute('data-doctor-id');
+                const clinicId = button.getAttribute('data-clinic-id');
+                const date = button.getAttribute('data-date');
+                const time = button.getAttribute('data-time');
+                const state = button.getAttribute('data-state');
 
                 // 设置表单字段值
-                this.querySelector('#editPatientId').value = id;
-                this.querySelector('#editPatientUsername').value = username;
-                this.querySelector('#editPatientName').value = name;
-                this.querySelector('#editPatientGender').value = gender;
-                this.querySelector('#editPatientAge').value = age;
-                // 密码字段留空，表示不修改
-                this.querySelector('#editPatientPassword').value = '';
+                this.querySelector('#editAppointmentId').value = id;
+                this.querySelector('#editPatientId').value = patientId;
+                this.querySelector('#editDoctorId').value = doctorId;
+                this.querySelector('#editClinicId').value = clinicId;
+                this.querySelector('#editDate').value = date;
+                this.querySelector('#editTime').value = time;
+                this.querySelector('#editState').value = state;
             });
         }
 
@@ -467,11 +527,9 @@
 
     // 确认删除函数
     function confirmDelete(type, id) {
-        console.log("准备删除:", type, id);
-
         let deleteUrl;
-        if (type === 'patient') {
-            deleteUrl = '/admin/patient/' + id;
+        if (type === 'appointment') {
+            deleteUrl = '/admin/appointment/' + id;
         } else {
             console.error('未知的删除类型');
             return;
@@ -482,8 +540,6 @@
         currentDeleteInfo.id = id;
         currentDeleteInfo.url = deleteUrl;
 
-        console.log("删除URL:", deleteUrl);
-
         // 显示确认对话框
         const confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
         confirmModal.show();
@@ -491,8 +547,6 @@
 
     // 执行删除操作
     function executeDelete(url) {
-        console.log("执行删除请求:", url);
-
         // 发送DELETE请求
         fetch(url, {
             method: 'DELETE',
@@ -502,8 +556,6 @@
             }
         })
             .then(response => {
-                console.log("删除响应状态:", response.status);
-
                 if (response.ok) {
                     // 关闭模态框
                     bootstrap.Modal.getInstance(document.getElementById('confirmDeleteModal')).hide();

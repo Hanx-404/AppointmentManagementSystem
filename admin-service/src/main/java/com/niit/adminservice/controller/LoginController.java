@@ -75,4 +75,38 @@ public class LoginController {
 
         return Result.success("退出成功");
     }
+
+    @PostMapping("/refresh-token")
+    @ResponseBody
+    public Result refreshToken(HttpServletRequest request) {
+        String authToken = request.getHeader("Authorization");
+        if (!StringUtils.hasText(authToken) || !authToken.startsWith("Bearer ")) {
+            return Result.fail("无效的令牌");
+        }
+
+        authToken = authToken.substring(7);
+
+        // 验证令牌
+        if (!jwtUtil.validateToken(authToken)) {
+            return Result.fail("令牌已过期");
+        }
+
+        // 获取用户名
+        String username = jwtUtil.getUsernameFromToken(authToken);
+
+        // 从Redis验证令牌
+        Object tokenInRedis = redisTemplate.opsForValue().get(username);
+        if (tokenInRedis == null || !tokenInRedis.equals(authToken)) {
+            return Result.fail("令牌无效");
+        }
+
+        // 生成新令牌
+        String newToken = jwtUtil.generateToken(username);
+        redisTemplate.opsForValue().set(username, newToken, jwtUtil.getExpiration(), TimeUnit.SECONDS);
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", newToken);
+
+        return Result.success(data);
+    }
 }
