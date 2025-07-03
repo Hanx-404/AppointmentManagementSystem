@@ -47,11 +47,19 @@ public class PatientService {
             return Result.fail("年龄输入有误，请重新输入");
         }
         Patient patientById = patientRepository.findById(patient.getId()).get();
-        patientById.setUsername(patient.getUsername());
-        patientById.setPassword(patient.getPassword());
-        patientById.setName(patient.getName());
-        patientById.setAge(patient.getAge());
-        patientById.setGender(patient.getGender());
+        if (patient.getPassword().isEmpty()){
+            patientById.setUsername(patient.getUsername());
+//            patientById.setPassword(patient.getPassword());
+            patientById.setName(patient.getName());
+            patientById.setAge(patient.getAge());
+            patientById.setGender(patient.getGender());
+        }else {
+            patientById.setUsername(patient.getUsername());
+            patientById.setPassword(patient.getPassword());
+            patientById.setName(patient.getName());
+            patientById.setAge(patient.getAge());
+            patientById.setGender(patient.getGender());
+        }
         Patient save = patientRepository.save(patientById);
         if(save != null){
             return Result.success(true,"添加成功");
